@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, render_template_string
 from flask_sqlalchemy import SQLAlchemy
 import os
 
@@ -125,6 +125,25 @@ def delete_task(task_id):
 @app.route("/service-worker.js")
 def service_worker():
     return send_from_directory("static/js", "service-worker.js")
+
+
+@app.route("/admin")
+def view_orders():
+    orders = Order.query.all()
+    return render_template_string("""
+        <h2>Submitted Orders</h2>
+        <table border="1">
+            <tr><th>ID</th><th>Username</th><th>Email</th><th>Account #</th></tr>
+            {% for o in orders %}
+            <tr>
+                <td>{{ o.id }}</td>
+                <td>{{ o.username }}</td>
+                <td>{{ o.email }}</td>
+                <td>{{ o.account_number }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    """, orders=orders)
 
 # -----------------------------
 # Run App
