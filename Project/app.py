@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, render_template_string
 from flask_sqlalchemy import SQLAlchemy
+from flask import Response
 import os
 
 app = Flask(__name__)
@@ -7,7 +8,7 @@ app = Flask(__name__)
 # -----------------------------
 # Database Setup
 # -----------------------------
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///site.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://muzzboost_db_user:CCHQQ8Hk6JBONu3hp1kwgM6a8SlT7Ufl@dpg-d0j2k32dbo4c73bvb5cg-a/muzzboost_db"
 db = SQLAlchemy(app)
 
 # Task model (for the to-do feature)
@@ -125,6 +126,40 @@ def delete_task(task_id):
 @app.route("/service-worker.js")
 def service_worker():
     return send_from_directory("static/js", "service-worker.js")
+
+def check_auth(username, password):
+    return username == "admin" and password == "Littlemuzz30"
+
+def authenticate():
+    return Response(
+        "Access denied.\n", 401,
+        {"WWW-Authenticate": 'Basic realm="Login Required"'}
+    )
+
+
+@app.route("/admin")
+def view_orders():
+    auth = request.authorization
+    if not auth or not check_auth(auth.username, auth.password):
+        return authenticate()
+
+    orders = Order.query.all()
+    return render_template_string("""
+        <h2>Submitted Orders</h2>
+        <table border="1" cellpadding="6">
+            <tr><th>ID</th><th>Username</th><th>Email</th><th>Account #</th></tr>
+            {% for o in orders %}
+            <tr>
+                <td>{{ o.id }}</td>
+                <td>{{ o.username }}</td>
+                <td>{{ o.email }}</td>
+                <td>{{ o.account_number }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    """, orders=orders)
+
+
 
 # -----------------------------
 # Run App

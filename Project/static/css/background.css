@@ -73,6 +73,11 @@ div.bodycol6 {
     width: 50%;
     display:inline-block;
 }
+div.bodycol7 {
+    background-color: rgb(13, 234, 156);
+    width: 50%;
+    display:inline-block;
+}
 div.body img {
     width: 50%;
     height: auto;
