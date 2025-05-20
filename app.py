@@ -8,7 +8,7 @@ app = Flask(__name__)
 # -----------------------------
 # Database Setup
 # -----------------------------
-app.config["SQLALCHEMY_DATABASE_URI"] = ""
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://muzzboost_db_user:<your-password>@<host>.render.com:5432/muzzboost_db"
 db = SQLAlchemy(app)
 
 # Task model (for the to-do feature)
