@@ -147,17 +147,40 @@ def view_orders():
     return render_template_string("""
         <h2>Submitted Orders</h2>
         <table border="1" cellpadding="6">
-            <tr><th>ID</th><th>Username</th><th>Email</th><th>Account #</th></tr>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Account #</th>
+                <th>Action</th>
+            </tr>
             {% for o in orders %}
             <tr>
                 <td>{{ o.id }}</td>
                 <td>{{ o.username }}</td>
                 <td>{{ o.email }}</td>
                 <td>{{ o.account_number }}</td>
+                <td>
+                    <form action="/delete/{{ o.id }}" method="POST" onsubmit="return confirm('Delete this order?');">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </table>
     """, orders=orders)
+
+
+@app.route("/delete/<int:order_id>", methods=["POST"])
+def delete_order(order_id):
+    auth = request.authorization
+    if not auth or not check_auth(auth.username, auth.password):
+        return authenticate()
+
+    order = Order.query.get_or_404(order_id)
+    db.session.delete(order)
+    db.session.commit()
+    return redirect("/admin")
 
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel ="stylesheet" type="text/css" href="background.css">
+    <link rel ="stylesheet" type="text/css" href="{{ url_for('static', filename='css/background.css') }}">
     <title>Accounts</title>
 </head>
 <body>
@@ -25,37 +25,36 @@
             <h2>1st account</h2>
             <p>This account has the appiration skin, an mw3 warzone iridesent skin and is prestige 5 level 30</p>
             <p>Price is $350</p>
-            <img src="images\20241122_222312.jpg" alt="in game bots with pssoble amount of kills" width="700" height="auto">
+            <img src="{{ url_for('static', filename='images/20241122_222312.jpg') }}" alt="in game bots with pssoble amount of kills" width="700" height="auto">
         </div>
         <div class="bodycol2">
             <h2>2nd account</h2>
             <p>This account has the appiration skin, an mw3 warzone iridesent skin and is prestige 5 level 30</p>
             <p>Price is $350</p>
-            <img src="images\20241122_222312.jpg" alt="in game bots with pssoble amount of kills" width="700" height="auto">
+            <img src="{{ url_for('static', filename='images/20241122_222312.jpg') }}" alt="in game bots with pssoble amount of kills" width="700" height="auto">
         </div>
         <div class="bodycol3">
             <h2>3rd account</h2>
             <p>This account has the appiration skin, an mw3 warzone iridesent skin and is prestige 5 level 30</p>
             <p>Price is $350</p>
-            <img src="images\20241122_222312.jpg" alt="in game bots with pssoble amount of kills" width="700" height="auto">
-        </div>
+            <img src="{{ url_for('static', filename='images/20241122_222312.jpg') }}" alt="in game bots with pssoble amount of kills" width="700" height="auto">
         <div class="bodycol4">
             <h2>3rd account</h2>
             <p>This account has the appiration skin, an mw3 warzone iridesent skin and is prestige 5 level 30</p>
             <p>Price is $350</p>
-            <img src="images\20241122_222312.jpg" alt="in game bots with pssoble amount of kills" width="700" height="auto">
+            <img src="{{ url_for('static', filename='images/20241122_222312.jpg') }}" alt="in game bots with pssoble amount of kills" width="700" height="auto">
         </div>
         <div class="bodycol5">
             <h2>3rd account</h2>
             <p>This account has the appiration skin, an mw3 warzone iridesent skin and is prestige 5 level 30</p>
             <p>Price is $350</p>
-            <img src="images\20241122_222312.jpg" alt="in game bots with pssoble amount of kills" width="700" height="auto">
+            <img src="{{ url_for('static', filename='images/20241122_222312.jpg') }}" alt="in game bots with pssoble amount of kills" width="700" height="auto">
         </div>
         <div class="bodycol6">
             <h2>3rd account</h2>
             <p>This account has the appiration skin, an mw3 warzone iridesent skin and is prestige 5 level 30</p>
             <p>Price is $350</p>
-            <img src="images\20241122_222312.jpg" alt="in game bots with pssoble amount of kills" width="700" height="auto">
+            <img src="{{ url_for('static', filename='images/20241122_222312.jpg') }}" alt="in game bots with pssoble amount of kills" width="700" height="auto">
         </div>
         <form action="http://127.0.0.1:5000/submit" method="POST">
             <input type="text" name="username" placeholder="Your Username" required />
