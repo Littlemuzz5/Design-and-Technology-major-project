@@ -58,12 +58,13 @@
             <p>Price is $350</p>
             <img src="{{ url_for('static', filename='images/20241122_222312.jpg') }}" alt="in game bots with pssoble amount of kills" width="700" height="auto">
         </div>
-        <form action="http://127.0.0.1:5000/submit" method="POST">
-            <input type="text" name="username" placeholder="Your Username" required />
+        <form action="/payment" method="POST">
+            <input type="text" name="username" placeholder="Discord name" required />
             <input type="email" name="email" placeholder="Your Email" required />
-            <input type="text" name="accountName" value="1st Account" hidden />
-            <button type="submit">Buy Now</button>
-        </form>
+            <input type="text" name="accountName" placeholder="What account" required />
+        <button type="submit">Buy Now</button>
+</form>
+
     </div>
 </body>
 </html>
