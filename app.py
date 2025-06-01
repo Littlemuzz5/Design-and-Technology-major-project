@@ -75,7 +75,8 @@ def payment():
     if request.method == "POST":
         username = request.form.get("username")
         email = request.form.get("email")
-        account_number = request.form.get("number")  # this matches your form
+        account_number = request.form.get("accountName")
+
 
         if not username or not email or not account_number:
             return "Missing data", 400
