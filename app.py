@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory, render_template_string
 from flask_sqlalchemy import SQLAlchemy
 from flask import Response
+from werkzeug.security import generate_password_hash
 import os
 
 app = Flask(__name__)
@@ -99,6 +100,30 @@ def get_tasks():
     tasks = Task.query.all()
     return jsonify([task.to_dict() for task in tasks]), 200
 
+@app.route("/signup", methods=["POST"])
+def signup():
+    email = request.form.get("email")
+    password = request.form.get("psw")
+    password_repeat = request.form.get("psw-repeat")
+
+    if not email or not password or not password_repeat:
+        return "All fields are required", 400
+
+    if password != password_repeat:
+        return "Passwords do not match", 400
+
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return "An account with this email already exists", 400
+
+    hashed_password = generate_password_hash(password)
+    new_user = User(email=email, password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return f"<h2>Thanks for signing up, {email}!</h2><a href='/'>Back to Home</a>"
+
+
 @app.route("/api/tasks", methods=["POST"])
 def create_task():
     data = request.get_json()
@@ -182,6 +207,11 @@ def delete_order(order_id):
     db.session.delete(order)
     db.session.commit()
     return redirect("/admin")
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
 
 
 
