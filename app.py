@@ -186,6 +186,17 @@ def login():
     return render_template("login.html")
 
 # -----------------------------
+# Log out
+# -----------------------------
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return "<h2>You have been logged out.</h2><a href='/'>Go to Home</a>"
+
+
+# -----------------------------
 # Admin Page
 # -----------------------------
 
