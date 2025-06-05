@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory, render_template_string, Response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
+from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
+from werkzeug.security import check_password_hash
+
 import os
 
 app = Flask(__name__)
@@ -27,10 +30,11 @@ class Order(db.Model):
     account_number = db.Column(db.String(50), nullable=False)
 
 # User model (for signups)
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+
 
 # Create tables
 with app.app_context():
@@ -217,5 +221,6 @@ def service_worker():
 # -----------------------------
 # Run App
 # -----------------------------
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
