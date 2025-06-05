@@ -14,6 +14,15 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://muzzboost_db_user:CCHQQ8Hk6JBONu3hp1kwgM6a8SlT7Ufl@dpg-d0j2k32dbo4c73bvb5cg-a/muzzboost_db"
 db = SQLAlchemy(app)
 
+login_manager = LoginManager()
+login_manager.login_view = "login"
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
 # Task model (for the to-do feature)
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,6 +43,8 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+
+
 
 
 # Create tables
@@ -153,6 +164,26 @@ def signup():
     db.session.commit()
 
     return f"<h2>Thanks for signing up, {email}!</h2><a href='/'>Back to Home</a>"
+
+
+# -----------------------------
+# Login
+# -----------------------------
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("psw")
+
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            return f"<h2>Welcome back, {user.email}!</h2><a href='/'>Go to Home</a>"
+        else:
+            return "Invalid email or password", 401
+
+    return render_template("login.html")
 
 # -----------------------------
 # Admin Page
