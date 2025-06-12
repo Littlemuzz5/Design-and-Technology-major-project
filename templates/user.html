@@ -89,12 +89,15 @@
           <th>Account #</th>
         </tr>
         {% for order in orders %}
-        <tr>
+        {% if order %}
+          <tr>
           <td>{{ order.username }}</td>
           <td>{{ order.email }}</td>
           <td>{{ order.account_number }}</td>
-        </tr>
+          </tr>
+        {% endif %}
         {% endfor %}
+
       </table>
       {% else %}
         <p>No orders yet.</p>
