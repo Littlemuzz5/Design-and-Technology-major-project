@@ -179,11 +179,20 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
-            return f"<h2>Welcome back, {user.email}!</h2><a href='/'>Go to Home</a>"
+            return redirect("/user")
         else:
             return "Invalid email or password", 401
 
     return render_template("login.html")
+
+@app.route("/user")
+@login_required
+def user_dashboard():
+    user_orders = Order.query.filter_by(email=current_user.email).all()
+    return render_template("user.html", user=current_user, orders=user_orders)
+
+
+
 
 # -----------------------------
 # Log out

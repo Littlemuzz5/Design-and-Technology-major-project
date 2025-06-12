@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your MuzzBoost Profile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #0074D9;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    .profile-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+    }
+    .avatar {
+      width: 100px;
+      height: 100px;
+      background: #ccc;
+      border-radius: 50%;
+      margin-right: 2rem;
+    }
+    .profile-info h2 {
+      margin: 0;
+    }
+    .orders {
+      margin-top: 2rem;
+    }
+    .orders table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .orders th, .orders td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    .logout {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #ff4136;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .logout:hover {
+      background: #e62e24;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Your MuzzBoost Profile</h1>
+  </header>
+
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="avatar"></div>
+      <div class="profile-info">
+        <h2>{{ user.email }}</h2>
+        <p>Member since: {{ user.id }}</p>
+      </div>
+    </div>
+
+    <div class="orders">
+      <h3>Your Orders</h3>
+      {% if orders %}
+      <table>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Account #</th>
+        </tr>
+        {% for order in orders %}
+        <tr>
+          <td>{{ order.username }}</td>
+          <td>{{ order.email }}</td>
+          <td>{{ order.account_number }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+        <p>No orders yet.</p>
+      {% endif %}
+    </div>
+
+    <a class="logout" href="/logout">Log Out</a>
+  </div>
+
+</body>
+</html>
