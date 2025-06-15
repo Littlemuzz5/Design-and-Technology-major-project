@@ -1,10 +1,14 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory, render_template_string, Response
+from flask import Flask, render_template, request, jsonify, send_from_directory, render_template_string, Response, redirect
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from werkzeug.security import check_password_hash
 
+
+
 import os
+app.secret_key = os.urandom(24)
+
 
 app = Flask(__name__)
 
@@ -281,7 +285,7 @@ from functools import wraps
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.email != "youremail@example.com":
+        if not current_user.is_authenticated or current_user.email != "ethanplm091@gmail.com":
             return "Access denied", 403
         return f(*args, **kwargs)
     return decorated_function
