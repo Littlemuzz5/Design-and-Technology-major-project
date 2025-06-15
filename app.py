@@ -269,6 +269,55 @@ def delete_order(order_id):
 def service_worker():
     return send_from_directory("static/js", "service-worker.js")
 
+
+
+#------------------------------
+# My own Page
+#------------------------------
+
+from flask import flash
+from functools import wraps
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.email != "youremail@example.com":
+            return "Access denied", 403
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route("/editor", methods=["GET", "POST"])
+@login_required
+@admin_required
+def editor():
+    import os
+
+    templates_dir = os.path.join(app.root_path, "templates")
+    pages = [f for f in os.listdir(templates_dir) if f.endswith(".html")]
+
+    if request.method == "POST":
+        page = request.form.get("page")
+        content = request.form.get("content")
+        path = os.path.join(templates_dir, page)
+
+        if os.path.exists(path):
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(content)
+            flash("Page updated successfully.")
+        else:
+            flash("File not found.")
+
+    selected_page = request.args.get("page")
+    file_content = ""
+    if selected_page:
+        path = os.path.join(templates_dir, selected_page)
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                file_content = f.read()
+
+    return render_template("editor.html", pages=pages, content=file_content, selected=selected_page)
+
+
 # -----------------------------
 # Run App
 # -----------------------------

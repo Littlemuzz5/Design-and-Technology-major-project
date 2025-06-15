@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Page Editor</title>
+    <style>
+        body { font-family: monospace; background: #f5f5f5; padding: 20px; }
+        select, textarea, button { width: 100%; margin-top: 10px; }
+        textarea { height: 70vh; font-family: monospace; }
+        .msg { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Admin Page Editor</h1>
+
+    <form method="get">
+        <label for="page">Choose a page to edit:</label>
+        <select name="page" id="page" onchange="this.form.submit()">
+            <option value="">--Select--</option>
+            {% for p in pages %}
+            <option value="{{ p }}" {% if selected == p %}selected{% endif %}>{{ p }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if selected %}
+    <form method="post">
+        <input type="hidden" name="page" value="{{ selected }}">
+        <textarea name="content">{{ content }}</textarea>
+        <button type="submit">Save Changes</button>
+    </form>
+    {% endif %}
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="msg">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>
