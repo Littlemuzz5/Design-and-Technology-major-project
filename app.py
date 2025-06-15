@@ -3,14 +3,17 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from werkzeug.security import check_password_hash
-
-
-
 import os
-app.secret_key = os.urandom(24)
+
+
+
+
 
 
 app = Flask(__name__)
+
+app.secret_key = os.urandom(24)
+
 
 # -----------------------------
 # Database Setup
