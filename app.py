@@ -353,6 +353,11 @@ def submit_listing():
         return f"Error submitting listing: {e}", 500
 
 
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return "<h2>You have been logged out.</h2><a href='/'>Go to Home</a>"
 
 
 # -----------------------------
@@ -379,20 +384,9 @@ def login():
 def user_dashboard():
     user_orders = Order.query.filter_by(email=current_user.email).all()
     return render_template("user.html", user=current_user, orders=user_orders)
-    def user_profile():
 
 
 
-
-# -----------------------------
-# Log out
-# -----------------------------
-
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return "<h2>You have been logged out.</h2><a href='/'>Go to Home</a>"
 
 
 
@@ -480,7 +474,6 @@ def admin_required(f):
 @login_required
 @admin_required
 def editor():
-
     templates_dir = os.path.join(app.root_path, "templates")
     pages = [f for f in os.listdir(templates_dir) if f.endswith(".html")]
 
