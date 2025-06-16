@@ -98,6 +98,12 @@ def socials():
 def moving_code():
     return render_template("moving code.html")
 
+@app.route("/customer-products")
+def customer_products():
+    listings = AccountListing.query.filter_by(status="approved").all()
+    return render_template("customer_products.html", listings=listings)
+
+
 @app.route("/payment", methods=["GET", "POST"])
 def payment():
     if request.method == "POST":
@@ -275,6 +281,19 @@ def delete_order(order_id):
 @app.route("/service-worker.js")
 def service_worker():
     return send_from_directory("static/js", "service-worker.js")
+
+
+class AccountListing(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    price = db.Column(db.String(20), nullable=False)
+    image_url = db.Column(db.String(255))
+    status = db.Column(db.String(20), default='pending')
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    owner = db.relationship('User', backref='listings')
+
 
 
 
