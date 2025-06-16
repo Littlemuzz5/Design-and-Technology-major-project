@@ -112,9 +112,9 @@ def payment():
         db.session.add(new_order)
         db.session.commit()
 
-        return f"<h2>Thanks {username}, your request for Account #{account_number} has been received!</h2><a href='/'>Back to Home</a>"
+        return redirect("/user")
 
-    return render_template("payment.html")
+
 
 # -----------------------------
 # Tasks API
