@@ -204,23 +204,32 @@ def signup():
 @app.route("/submit-listing", methods=["POST"])
 @login_required
 def submit_listing():
-    title = request.form.get("title")
-    description = request.form.get("description")
-    price = request.form.get("price")
-    image_url = request.form.get("image_url", "")
+    try:
+        title = request.form.get("title")
+        description = request.form.get("description")
+        price = request.form.get("price")
+        image_url = request.form.get("image_url", "")
 
-    listing = AccountListing(
-        title=title,
-        description=description,
-        price=price,
-        image_url=image_url,
-        status="pending",
-        owner_id=current_user.id
-    )
+        # Basic field validation
+        if not title or not description or not price:
+            return "Missing required fields", 400
 
-    db.session.add(listing)
-    db.session.commit()
-    return redirect("/user")
+        listing = AccountListing(
+            title=title,
+            description=description,
+            price=price,
+            image_url=image_url,
+            status="pending",
+            owner_id=current_user.id
+        )
+
+        db.session.add(listing)
+        db.session.commit()
+        return redirect("/user")
+
+    except Exception as e:
+        return f"Error submitting listing: {e}", 500
+ 
 
 
 
