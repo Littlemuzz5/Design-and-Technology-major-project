@@ -20,19 +20,20 @@
     <div class="container">
         {% if listings %}
             {% for item in listings %}
-                <div style="border:1px solid #ccc; padding: 1rem; margin-bottom: 1rem;">
-                    <h2>{{ item.title }}</h2>
-                    <p>{{ item.description }}</p>
-                    <p><strong>Price:</strong> {{ item.price }}</p>
-                    {% if item.image_url %}
-                        <img src="{{ item.image_url }}" alt="Product Image" width="300">
-                    {% endif %}
-                    <p><em>Uploaded by {{ item.owner.email }}</em></p>
-                </div>
-            {% endfor %}
+    <div style="border:1px solid #ccc; padding: 1rem; margin-bottom: 1rem;">
+        <h2>{{ item.title }}</h2>
+        <p>{{ item.description }}</p>
+        <p><strong>Price:</strong> {{ item.price }}</p>
+        {% if item.image_url %}
+            <img src="{{ item.image_url }}" alt="Product Image" width="300">
+        {% endif %}
+        {% if item.owner %}
+            <p>Uploaded by {{ item.owner.email }}</p>
         {% else %}
-            <p>No customer products have been approved yet.</p>
+            <p>Uploader unknown</p>
         {% endif %}
     </div>
+{% endfor %}
+
 </body>
 </html>

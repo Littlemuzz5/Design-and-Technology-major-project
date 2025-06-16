@@ -100,8 +100,12 @@ def moving_code():
 
 @app.route("/customer-products")
 def customer_products():
-    listings = AccountListing.query.filter_by(status="approved").all()
-    return render_template("customer_products.html", listings=listings)
+    try:
+        listings = AccountListing.query.filter_by(status="approved").all()
+        return render_template("customer products.html", listings=listings)
+    except Exception as e:
+        return f"Error loading customer products: {e}", 500
+
 
 
 @app.route("/payment", methods=["GET", "POST"])
