@@ -60,7 +60,7 @@ class AccountListing(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     price = db.Column(db.String(20), nullable=False)
-    image_url = db.Column(db.String(255))
+    image_url = db.Column(db.String(255))  # store 'img123.jpg'
     status = db.Column(db.String(20), default='pending')
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -201,24 +201,38 @@ def signup():
 
 
 
+import os
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @app.route("/submit-listing", methods=["POST"])
 @login_required
 def submit_listing():
     try:
-        title = request.form.get("title")
-        description = request.form.get("description")
-        price = request.form.get("price")
-        image_url = request.form.get("image_url", "")
+        title = request.form["title"]
+        description = request.form["description"]
+        price = request.form["price"]
+        file = request.files["image"]
 
-        # Basic field validation
-        if not title or not description or not price:
-            return "Missing required fields", 400
+        if not file or file.filename == '':
+            return "No image selected", 400
+        if not allowed_file(file.filename):
+            return "Invalid file type", 400
+
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         listing = AccountListing(
             title=title,
             description=description,
             price=price,
-            image_url=image_url,
+            image_url=filename,  # just the filename now
             status="pending",
             owner_id=current_user.id
         )
@@ -226,10 +240,9 @@ def submit_listing():
         db.session.add(listing)
         db.session.commit()
         return redirect("/user")
-
     except Exception as e:
         return f"Error submitting listing: {e}", 500
- 
+
 
 
 
