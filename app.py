@@ -119,6 +119,8 @@ def payment():
         db.session.commit()
 
         return redirect("/user")
+    
+    
 
 
 
@@ -177,6 +179,30 @@ def signup():
     db.session.commit()
 
     return f"<h2>Thanks for signing up, {email}!</h2><a href='/'>Back to Home</a>"
+
+
+
+@app.route("/submit-listing", methods=["POST"])
+@login_required
+def submit_listing():
+    title = request.form.get("title")
+    description = request.form.get("description")
+    price = request.form.get("price")
+    image_url = request.form.get("image_url", "")
+
+    listing = AccountListing(
+        title=title,
+        description=description,
+        price=price,
+        image_url=image_url,
+        status="pending",
+        owner_id=current_user.id
+    )
+
+    db.session.add(listing)
+    db.session.commit()
+    return redirect("/user")
+
 
 
 # -----------------------------

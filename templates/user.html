@@ -50,7 +50,19 @@
         <input type="text" name="accountName" placeholder="Account Name or Details" required>
         <button type="submit">Submit Order</button>
       </form>
+
+      <h2>Submit a Product to Customer Listings</h2>
+<form action="/submit-listing" method="POST">
+  <input type="text" name="title" placeholder="Product Title" required><br>
+  <textarea name="description" placeholder="Product Description" required></textarea><br>
+  <input type="text" name="price" placeholder="Price (e.g. $40)" required><br>
+  <input type="text" name="image_url" placeholder="Image URL (optional)"><br>
+  <button type="submit">Submit Product</button>
+</form>
+
     </div>
+
+
 
     <div class="logout">
       <a href="/logout">Logout</a>
