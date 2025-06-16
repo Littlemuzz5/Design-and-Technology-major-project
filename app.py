@@ -133,6 +133,58 @@ def moving_code():
 def please_confirm():
     return "Please check your email to confirm your account."
 
+@app.route("/admin")
+@login_required
+def admin_panel():
+    if current_user.email != "ethanplm091@gmail.com":
+        return "Access denied", 403
+
+    orders = Order.query.all()
+    listings = AccountListing.query.all()
+    return render_template("admin.html", orders=orders, listings=listings)
+
+@app.route("/approve-order/<int:order_id>", methods=["POST"])
+@login_required
+def approve_order(order_id):
+    if current_user.email != "ethanplm091@gmail.com":
+        return "Access denied", 403
+    order = Order.query.get_or_404(order_id)
+    # You can add logic here like setting order.approved = True
+    db.session.delete(order)  # or mark as processed
+    db.session.commit()
+    return redirect("/admin")
+
+@app.route("/reject-order/<int:order_id>", methods=["POST"])
+@login_required
+def reject_order(order_id):
+    if current_user.email != "ethanplm091@gmail.com":
+        return "Access denied", 403
+    order = Order.query.get_or_404(order_id)
+    db.session.delete(order)
+    db.session.commit()
+    return redirect("/admin")
+
+@app.route("/approve-listing/<int:listing_id>", methods=["POST"])
+@login_required
+def approve_listing(listing_id):
+    if current_user.email != "ethanplm091@gmail.com":
+        return "Access denied", 403
+    listing = AccountListing.query.get_or_404(listing_id)
+    listing.approved = True
+    db.session.commit()
+    return redirect("/admin")
+
+@app.route("/reject-listing/<int:listing_id>", methods=["POST"])
+@login_required
+def reject_listing(listing_id):
+    if current_user.email != "ethanplm091@gmail.com":
+        return "Access denied", 403
+    listing = AccountListing.query.get_or_404(listing_id)
+    db.session.delete(listing)
+    db.session.commit()
+    return redirect("/admin")
+
+
 
 @app.route("/confirm/<token>")
 def confirm_email(token):
@@ -215,11 +267,11 @@ def reject_listing(item_id):
 
 @app.route("/customer-products")
 def customer_products():
-    try:
-        listings = AccountListing.query.filter_by(status="approved").all()
-        return render_template("customer products.html", listings=listings)
-    except Exception as e:
-        return f"Error loading customer products: {e}", 500
+    listings = AccountListing.query.filter_by(approved=True).all()
+    return render_template("customer products.html", listings=listings)
+
+
+approved = db.Column(db.Boolean, default=False)
 
 
 
