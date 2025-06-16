@@ -11,10 +11,6 @@ from werkzeug.utils import secure_filename
 
 
 
-
-
-
-
 app = Flask(__name__)
 
 app.secret_key = os.urandom(24)
@@ -142,17 +138,16 @@ def please_confirm():
 def confirm_email(token):
     try:
         email = s.loads(token, salt="email-confirm", max_age=3600)
-    except Exception as e:
-        return "The confirmation link is invalid or expired."
+    except:
+        return "Link expired or invalid"
 
     user = User.query.filter_by(email=email).first_or_404()
     if user.confirmed:
-        return "Account already confirmed. Please log in."
+        return "Already confirmed."
     
     user.confirmed = True
     db.session.commit()
-    return "Your account has been confirmed! You can now log in."
-    confirmed = db.Column(db.Boolean, default=False)
+    return "Email confirmed!"
 
 
 
@@ -285,29 +280,28 @@ def delete_task(task_id):
 def signup():
     email = request.form.get("email")
     password = request.form.get("psw")
-    password_repeat = request.form.get("psw-repeat")
+    repeat = request.form.get("psw-repeat")
 
-    if not email or not password or not password_repeat:
-        return "All fields are required", 400
-    if password != password_repeat:
-        return "Passwords do not match", 400
+    if not email or not password or password != repeat:
+        return "Invalid input or passwords do not match", 400
 
-    if User.query.filter_by(email=email).first():
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
         return "Email already registered", 400
 
-    hashed_password = generate_password_hash(password)
-    new_user = User(email=email, password=hashed_password)
+    # Create user with confirmed=False
+    new_user = User(email=email, password=generate_password_hash(password), confirmed=False)
     db.session.add(new_user)
     db.session.commit()
 
-    # Generate token and send email
-    token = s.dumps(email, salt="email-confirm")
-    confirm_url = f"{request.url_root}confirm/{token}"
-    msg = Message("Confirm your MuzzBoost account", recipients=[email])
-    msg.body = f"Click the link to confirm your email: {confirm_url}"
+    # Send confirmation email
+    token = s.dumps(email, salt='email-confirm')
+    link = url_for('confirm_email', token=token, _external=True)
+    msg = Message('Confirm your email', recipients=[email])
+    msg.body = f'Click here to confirm: {link}'
     mail.send(msg)
 
-    return f"Confirmation email sent to {email}. Please verify to complete signup."
+    return f"Signup successful! Confirmation email sent to {email}."
 
 
 
