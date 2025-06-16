@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory, render_template_string, Response, redirect
+from flask import Flask, render_template, request, jsonify, send_from_directory, render_template_string, Response, redirect, abort
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, secure_filename
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from werkzeug.security import check_password_hash
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
+from functools import wraps
 import os
 
 
@@ -69,9 +72,24 @@ class AccountListing(db.Model):
 
 
 
+
+
 # Create tables
 with app.app_context():
     db.create_all()
+
+
+    app.config.update(
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT=587,
+    MAIL_USE_TLS=True,
+    MAIL_USERNAME='your_email@gmail.com',
+    MAIL_PASSWORD='your_email_password',  # App password recommended
+    MAIL_DEFAULT_SENDER='your_email@gmail.com'
+)
+
+mail = Mail(app)
+s = URLSafeTimedSerializer(app.secret_key)
 
 # -----------------------------
 # Page Routes
@@ -113,6 +131,91 @@ def socials():
 def moving_code():
     return render_template("moving code.html")
 
+@app.route("/please-confirm")
+def please_confirm():
+    return "Please check your email to confirm your account."
+
+
+@app.route("/confirm/<token>")
+def confirm_email(token):
+    try:
+        email = s.loads(token, salt="email-confirm", max_age=3600)
+    except Exception as e:
+        return "The confirmation link is invalid or expired."
+
+    user = User.query.filter_by(email=email).first_or_404()
+    if user.confirmed:
+        return "Account already confirmed. Please log in."
+    
+    user.confirmed = True
+    db.session.commit()
+    return "Your account has been confirmed! You can now log in."
+    confirmed = db.Column(db.Boolean, default=False)
+
+
+
+
+
+def email_confirmed_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.confirmed:
+            return redirect('/please-confirm')
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+
+@app.route("/admin/listings")
+@login_required
+def admin_listings():
+    if current_user.email != "ethanplm091@gmail.com":
+        abort(403)
+
+    listings = AccountListing.query.filter_by(status="pending").all()
+    return render_template_string("""
+    <h1>Pending Customer Listings</h1>
+    {% for item in listings %}
+      <div style="border:1px solid #ccc; padding: 1rem; margin-bottom: 1rem;">
+        <h2>{{ item.title }}</h2>
+        <p>{{ item.description }}</p>
+        <p><strong>Price:</strong> {{ item.price }}</p>
+        {% if item.image_url %}
+          <img src="{{ url_for('static', filename='uploads/' + item.image_url) }}" width="300">
+        {% endif %}
+        <form action="/approve/{{ item.id }}" method="POST" style="display:inline;">
+          <button>Approve</button>
+        </form>
+        <form action="/reject/{{ item.id }}" method="POST" style="display:inline;">
+          <button>Reject</button>
+        </form>
+      </div>
+    {% endfor %}
+    """, listings=listings)
+
+@app.route("/approve/<int:item_id>", methods=["POST"])
+@login_required
+def approve_listing(item_id):
+    if current_user.email != "ethanplm091@gmail.com":
+        abort(403)
+
+    listing = AccountListing.query.get_or_404(item_id)
+    listing.status = "approved"
+    db.session.commit()
+    return redirect("/admin/listings")
+
+@app.route("/reject/<int:item_id>", methods=["POST"])
+@login_required
+def reject_listing(item_id):
+    if current_user.email != "ethanplm091@gmail.com":
+        abort(403)
+
+    listing = AccountListing.query.get_or_404(item_id)
+    listing.status = "rejected"
+    db.session.commit()
+    return redirect("/admin/listings")
+
+
 @app.route("/customer-products")
 def customer_products():
     try:
@@ -136,8 +239,8 @@ def payment():
         new_order = Order(username=username, email=email, account_number=account_number)
         db.session.add(new_order)
         db.session.commit()
-
         return redirect("/user")
+
     
     
 
@@ -184,25 +287,31 @@ def signup():
 
     if not email or not password or not password_repeat:
         return "All fields are required", 400
-
     if password != password_repeat:
         return "Passwords do not match", 400
 
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        return "An account with this email already exists", 400
+    if User.query.filter_by(email=email).first():
+        return "Email already registered", 400
 
     hashed_password = generate_password_hash(password)
     new_user = User(email=email, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
 
-    return f"<h2>Thanks for signing up, {email}!</h2><a href='/'>Back to Home</a>"
+    # Generate token and send email
+    token = s.dumps(email, salt="email-confirm")
+    confirm_url = f"{request.url_root}confirm/{token}"
+    msg = Message("Confirm your MuzzBoost account", recipients=[email])
+    msg.body = f"Click the link to confirm your email: {confirm_url}"
+    mail.send(msg)
+
+    return f"Confirmation email sent to {email}. Please verify to complete signup."
 
 
 
-import os
-from werkzeug.utils import secure_filename
+
+
+
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -270,6 +379,7 @@ def login():
 def user_dashboard():
     user_orders = Order.query.filter_by(email=current_user.email).all()
     return render_template("user.html", user=current_user, orders=user_orders)
+    def user_profile():
 
 
 
@@ -283,6 +393,7 @@ def user_dashboard():
 def logout():
     logout_user()
     return "<h2>You have been logged out.</h2><a href='/'>Go to Home</a>"
+
 
 
 # -----------------------------
@@ -357,9 +468,6 @@ def service_worker():
 # My own Page
 #------------------------------
 
-from flask import flash
-from functools import wraps
-
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -372,7 +480,6 @@ def admin_required(f):
 @login_required
 @admin_required
 def editor():
-    import os
 
     templates_dir = os.path.join(app.root_path, "templates")
     pages = [f for f in os.listdir(templates_dir) if f.endswith(".html")]
