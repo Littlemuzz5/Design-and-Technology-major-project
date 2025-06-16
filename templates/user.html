@@ -52,13 +52,14 @@
       </form>
 
       <h2>Submit a Product to Customer Listings</h2>
-<form action="/submit-listing" method="POST">
+<form action="/submit-listing" method="POST" enctype="multipart/form-data">
   <input type="text" name="title" placeholder="Product Title" required><br>
   <textarea name="description" placeholder="Product Description" required></textarea><br>
   <input type="text" name="price" placeholder="Price (e.g. $40)" required><br>
-  <input type="text" name="image_url" placeholder="Image URL (optional)"><br>
+  <input type="file" name="image" accept="image/*" required><br>
   <button type="submit">Submit Product</button>
 </form>
+
 
     </div>
 
