@@ -62,6 +62,7 @@ class AccountListing(db.Model):
     description = db.Column(db.Text, nullable=False)
     price = db.Column(db.String(20), nullable=False)
     image_url = db.Column(db.String(255))  # store 'img123.jpg'
+    approved = db.Column(db.Boolean, default=False)
     status = db.Column(db.String(20), default='pending')
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -253,17 +254,7 @@ def approve_listing(item_id):
     db.session.commit()
     return redirect("/admin/listings")
 
-@app.route("/reject/<int:item_id>", methods=["POST"])
-@login_required
-def reject_listing(item_id):
-    if current_user.email != "ethanplm091@gmail.com":
-        abort(403)
 
-    listing = AccountListing.query.get_or_404(item_id)
-    listing.status = "rejected"
-    db.session.commit()
-    approved = db.Column(db.Boolean, default=False)
-    return redirect("/admin/listings")
 
 
 @app.route("/customer-products")
