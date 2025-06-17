@@ -164,7 +164,7 @@ def reject_order(order_id):
     db.session.commit()
     return redirect("/admin")
 
-@app.route("/approve-listing/<int:listing_id>", methods=["POST"])
+
 @login_required
 def approve_listing(listing_id):
     if current_user.email != "ethanplm091@gmail.com":
@@ -262,6 +262,7 @@ def reject_listing(item_id):
     listing = AccountListing.query.get_or_404(item_id)
     listing.status = "rejected"
     db.session.commit()
+    approved = db.Column(db.Boolean, default=False)
     return redirect("/admin/listings")
 
 
@@ -269,9 +270,6 @@ def reject_listing(item_id):
 def customer_products():
     listings = AccountListing.query.filter_by(approved=True).all()
     return render_template("customer products.html", listings=listings)
-
-
-approved = db.Column(db.Boolean, default=False)
 
 
 
@@ -451,12 +449,11 @@ def authenticate():
         {"WWW-Authenticate": 'Basic realm="Login Required"'}
     )
 
-@app.route("/admin")
+@app.route("/admin-orders")
 def view_orders():
     auth = request.authorization
-    if not auth or not check_auth(auth.username, auth.password):
-        return authenticate()
-
+    if not auth or not (auth.username == "ethan" and auth.password == "admin"):
+        return "Access denied", 403
     orders = Order.query.all()
     return render_template_string("""
         <h2>Submitted Orders</h2>
@@ -556,4 +553,3 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
-
