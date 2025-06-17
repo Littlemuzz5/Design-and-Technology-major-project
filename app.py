@@ -8,6 +8,7 @@ from itsdangerous import URLSafeTimedSerializer
 from functools import wraps
 import os
 from werkzeug.utils import secure_filename
+from flask_migrate import Migrate
 
 
 
@@ -23,6 +24,7 @@ app.secret_key = os.urandom(24)
 # -----------------------------
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://muzzboost_db_user:CCHQQ8Hk6JBONu3hp1kwgM6a8SlT7Ufl@dpg-d0j2k32dbo4c73bvb5cg-a/muzzboost_db"
 db = SQLAlchemy(app)
+
 
 
 
@@ -55,6 +57,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+    confirmed = db.Column(db.Boolean, default=False)
 
 class AccountListing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -76,6 +79,10 @@ class AccountListing(db.Model):
 # Create tables
 with app.app_context():
     db.create_all()
+    app.config["DEBUG"] = True
+    migrate = Migrate(app, db)
+
+
 
 
     app.config.update(
@@ -146,7 +153,7 @@ def admin_panel():
 
 @app.route("/approve-order/<int:order_id>", methods=["POST"])
 @login_required
-def approve_order(order_id):
+def approve_order(order_id): 
     if current_user.email != "ethanplm091@gmail.com":
         return "Access denied", 403
     order = Order.query.get_or_404(order_id)
