@@ -407,20 +407,27 @@ def logout():
 # Login
 # -----------------------------
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("psw")
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        # 🐛 Debug logs
+        print(f"Login attempt: {email} / {password}")
 
         user = User.query.filter_by(email=email).first()
+        print(f"Found user: {user}")
+        print(f"Password match: {check_password_hash(user.password, password) if user else 'n/a'}")
+
         if user and check_password_hash(user.password, password):
             login_user(user)
-            return redirect("/user")
+            return redirect(request.args.get('next') or '/user')
         else:
             return "Invalid email or password", 401
 
-    return render_template("login.html")
+    return render_template('login.html')
+
 
 @app.route("/user")
 @login_required
