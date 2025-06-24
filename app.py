@@ -88,9 +88,9 @@ with app.app_context():
     MAIL_SERVER='smtp.gmail.com',
     MAIL_PORT=587,
     MAIL_USE_TLS=True,
-    MAIL_USERNAME='yourgmail@gmail.com',
+    MAIL_USERNAME='ethanplm1@gmail.com',
     MAIL_PASSWORD='ioqj xicg fzdl rsch',  # App password recommended
-    MAIL_DEFAULT_SENDER='yourgmail@gmail.com'
+    MAIL_DEFAULT_SENDER='ethanplm1@gmail.com'
 )
 
 mail = Mail(app)
