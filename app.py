@@ -175,8 +175,10 @@ def approve_listing(item_id):
 
     listing = AccountListing.query.get_or_404(item_id)
     listing.status = "approved"
+    listing.approved = True 
     db.session.commit()
     return redirect("/admin/listings")
+
 
 @app.route("/reject-listing/<int:item_id>", methods=["POST"])
 @login_required
@@ -278,20 +280,26 @@ def admin_listings():
     <h1>Pending Customer Listings</h1>
     {% for item in listings %}
       <div style="border:1px solid #ccc; padding: 1rem; margin-bottom: 1rem;">
-        <h2>{{ item.title }}</h2>
-        <p>{{ item.description }}</p>
-        <p><strong>Price:</strong> {{ item.price }}</p>
-        {% if item.image_url %}
-          <img src="{{ url_for('static', filename='uploads/' + item.image_url) }}" width="300">
-        {% endif %}
-        <form action="{{ url_for('approve_listing', item_id=item.id) }}" method="POST">
-          <button>Approve</button>
-        </form>
-        <form action="{{ url_for('reject_listing', item_id=item.id) }}" method="POST">
-          <button>Reject</button>
-        </form>
-      </div>
-    {% endfor %}
+        <h2>Customer Listings</h2>
+<ul>
+  {% for listing in listings %}
+    <li>
+      <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
+<img src="{{ url_for('static', filename='uploads/' + listing.image_url) }}" alt="Image for {{ listing.title }}" style="max-width: 200px; height: auto;"><br>
+
+      {% if listing.image_url %}
+        <img src="{{ url_for('static', filename='uploads/' + listing.image_url) }}" width="200"><br>
+      {% endif %}
+      <form action="/approve-listing/{{ listing.id }}" method="POST" style="display:inline;">
+        <button type="submit">Approve</button>
+      </form>
+      <form action="/reject-listing/{{ listing.id }}" method="POST" style="display:inline;">
+        <button type="submit">Reject</button>
+      </form>
+    </li>
+  {% endfor %}
+</ul>
+
     """, listings=listings)
 
 
