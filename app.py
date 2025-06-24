@@ -23,6 +23,7 @@ app.secret_key = os.urandom(24)
 # Database Setup
 # -----------------------------
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://muzzboost_db_user:CCHQQ8Hk6JBONu3hp1kwgM6a8SlT7Ufl@dpg-d0j2k32dbo4c73bvb5cg-a/muzzboost_db?sslmode=require"
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')  # Create this folder if it doesn't exist
 db = SQLAlchemy(app)
 
 
@@ -64,10 +65,10 @@ class AccountListing(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     price = db.Column(db.String(20), nullable=False)
-    image_url = db.Column(db.String(255))  # store 'img123.jpg'
     approved = db.Column(db.Boolean, default=False)
     status = db.Column(db.String(20), default='pending')
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    image_filename = db.Column(db.String(255))
 
     owner = db.relationship('User', backref='listings')
 
@@ -87,9 +88,9 @@ with app.app_context():
     MAIL_SERVER='smtp.gmail.com',
     MAIL_PORT=587,
     MAIL_USE_TLS=True,
-    MAIL_USERNAME='ethanplm1@gmail.com',
-    MAIL_PASSWORD='ioqj xicg fzdl rsch',  # App password recommended
-    MAIL_DEFAULT_SENDER='ethanplm1@gmail.com'
+    MAIL_USERNAME='Muzzboost@gmail.com',
+    MAIL_PASSWORD='ujpt ggtd uscw fmzt',  # App password recommended
+    MAIL_DEFAULT_SENDER='Muzzboost@gmail.com'
 )
 
 mail = Mail(app)
@@ -134,6 +135,23 @@ def socials():
 @app.route("/moving-code")
 def moving_code():
     return render_template("moving code.html")
+
+@app.route("/create-listing", methods=["POST"])
+@login_required
+def create_listing():
+    title = request.form["title"]
+    price = request.form["price"]
+    image = request.files["image"]
+
+    filename = None
+    if image and image.filename != "":
+        filename = secure_filename(image.filename)
+        image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+    new_listing = AccountListing(title=title, price=price, image_filename=filename)
+    db.session.add(new_listing)
+    db.session.commit()
+    return redirect("/account")
 
 
 @app.route("/admin")
@@ -285,10 +303,10 @@ def admin_listings():
   {% for listing in listings %}
     <li>
       <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
-<img src="{{ url_for('static', filename='uploads/' + listing.image_url) }}" alt="Image for {{ listing.title }}" style="max-width: 200px; height: auto;"><br>
+<img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" alt="Image for {{ listing.title }}" style="max-width: 200px; height: auto;"><br>
 
-      {% if listing.image_url %}
-        <img src="{{ url_for('static', filename='uploads/' + listing.image_url) }}" width="200"><br>
+      {% if listing.image_filename %}
+        <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" width="200"><br>
       {% endif %}
       <form action="/approve-listing/{{ listing.id }}" method="POST" style="display:inline;">
         <button type="submit">Approve</button>
@@ -434,7 +452,7 @@ def submit_listing():
             title=title,
             description=description,
             price=price,
-            image_url=filename,  # just the filename now
+            image_filename=filename,  # just the filename now
             status="pending",
             owner_id=current_user.id
         )

@@ -20,17 +20,23 @@
 
     <h2>Orders</h2>
     <div>
-      {% for order in orders %}
-        <div class="order">
-          <strong>{{ order.username }}</strong> - {{ order.account_number }}<br>
-          <form action="/approve-order/{{ order.id }}" method="POST" style="display:inline;">
-            <button type="submit">Approve</button>
-          </form>
-          <form action="/reject-order/{{ order.id }}" method="POST" style="display:inline;">
-            <button type="submit">Reject</button>
-          </form>
-        </div>
-      {% endfor %}
+      {% for listing in listings %}
+  <li>
+    <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
+    {% if listing.image_filename %}
+      <img src="{{ url_for('static', filename='uploads/' ~ listing.image_filename) }}" width="200"><br>
+    {% else %}
+      <em>No image uploaded</em><br>
+    {% endif %}
+    <form action="/approve-listing/{{ listing.id }}" method="POST" style="display:inline;">
+      <button type="submit">Approve</button>
+    </form>
+    <form action="/reject-listing/{{ listing.id }}" method="POST" style="display:inline;">
+      <button type="submit">Reject</button>
+    </form>
+  </li>
+{% endfor %}
+
     </div>
 
     <h2>Customer Listings</h2>
