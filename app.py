@@ -136,9 +136,6 @@ def socials():
 def moving_code():
     return render_template("moving code.html")
 
-@app.route("/please-confirm")
-def please_confirm():
-    return "Please check your email to confirm your account."
 
 @app.route("/admin")
 @login_required
