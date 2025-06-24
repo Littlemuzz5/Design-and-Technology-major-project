@@ -22,7 +22,7 @@ app.secret_key = os.urandom(24)
 # -----------------------------
 # Database Setup
 # -----------------------------
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://muzzboost_db_user:CCHQQ8Hk6JBONu3hp1kwgM6a8SlT7Ufl@dpg-d0j2k32dbo4c73bvb5cg-a/muzzboost_db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://muzzboost_db_user:CCHQQ8Hk6JBONu3hp1kwgM6a8SlT7Ufl@dpg-d0j2k32dbo4c73bvb5cg-a/muzzboost_db?sslmode=require"
 db = SQLAlchemy(app)
 
 
@@ -190,6 +190,20 @@ def reject_listing(listing_id):
     db.session.delete(listing)
     db.session.commit()
     return redirect("/admin")
+
+
+@app.route("/please-confirm")
+def please_confirm():
+    return render_template_string("""
+    <h2>Please Confirm Your Email</h2>
+    <p>We've sent a confirmation link to your email. Click it to activate your account.</p>
+    <p>If you didn’t receive the email, you can request a new one below:</p>
+    
+    <form method="POST" action="/resend-confirmation">
+        <input type="email" name="email" placeholder="Enter your email again" required>
+        <button type="submit">Resend Confirmation Email</button>
+    </form>
+    """)
 
 
 
@@ -378,7 +392,8 @@ def signup():
     msg.body = f'Click here to confirm: {link}'
     mail.send(msg)
 
-    return f"Signup successful! Confirmation email sent to {email}."
+    return redirect("/please-confirm")
+
 
 
 
