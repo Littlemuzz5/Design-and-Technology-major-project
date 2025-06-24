@@ -366,30 +366,35 @@ def delete_task(task_id):
 # -----------------------------
 @app.route("/signup", methods=["POST"])
 def signup():
-    email = request.form.get("email")
-    password = request.form.get("psw")
-    repeat = request.form.get("psw-repeat")
+    try:
+        email = request.form.get("email")
+        password = request.form.get("psw")
+        repeat = request.form.get("psw-repeat")
 
-    if not email or not password or password != repeat:
-        return "Invalid input or passwords do not match", 400
+        if not email or not password or password != repeat:
+            return "Invalid input or passwords do not match", 400
 
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        return "Email already registered", 400
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            return "Email already registered", 400
 
-    # Create user with confirmed=False
-    new_user = User(email=email, password=generate_password_hash(password), confirmed=False)
-    db.session.add(new_user)
-    db.session.commit()
+        new_user = User(email=email, password=generate_password_hash(password), confirmed=False)
+        db.session.add(new_user)
+        db.session.commit()
 
-    # Send confirmation email
-    token = s.dumps(email, salt='email-confirm')
-    link = url_for('confirm_email', token=token, _external=True)
-    msg = Message('Confirm your email', recipients=[email])
-    msg.body = f'Click here to confirm: {link}'
-    mail.send(msg)
+        token = s.dumps(email, salt='email-confirm')
+        link = url_for('confirm_email', token=token, _external=True)
+        msg = Message('Confirm your email', recipients=[email])
+        msg.body = f'Click here to confirm your account: {link}'
 
-    return redirect("/please-confirm")
+        mail.send(msg)  # Might be the breaking line
+
+        return redirect("/please-confirm")
+
+    except Exception as e:
+        print("🔥 SIGNUP ERROR:", e)
+        return "Something went wrong during signup.", 500
+
 
 
 
