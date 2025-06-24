@@ -168,25 +168,30 @@ def reject_order(order_id):
     db.session.commit()
     return redirect("/admin")
 
-
+@app.route("/approve-listing/<int:item_id>", methods=["POST"])
 @login_required
-def approve_listing(listing_id):
+def approve_listing(item_id):
     if current_user.email != "ethanplm091@gmail.com":
-        return "Access denied", 403
-    listing = AccountListing.query.get_or_404(listing_id)
-    listing.approved = True
-    db.session.commit()
-    return redirect("/admin")
+        abort(403)
 
-@app.route("/reject-listing/<int:listing_id>", methods=["POST"])
-@login_required
-def reject_listing(listing_id):
-    if current_user.email != "ethanplm091@gmail.com":
-        return "Access denied", 403
-    listing = AccountListing.query.get_or_404(listing_id)
-    db.session.delete(listing)
+    listing = AccountListing.query.get_or_404(item_id)
+    listing.status = "approved"
     db.session.commit()
-    return redirect("/admin")
+    return redirect("/admin/listings")
+
+@app.route("/reject-listing/<int:item_id>", methods=["POST"])
+@login_required
+def reject_listing(item_id):
+    if current_user.email != "ethanplm091@gmail.com":
+        abort(403)
+
+    listing = AccountListing.query.get_or_404(item_id)
+    listing.status = "rejected"
+    db.session.commit()
+    return redirect("/admin/listings")
+
+
+
 
 
 @app.route("/please-confirm")
@@ -280,26 +285,17 @@ def admin_listings():
         {% if item.image_url %}
           <img src="{{ url_for('static', filename='uploads/' + item.image_url) }}" width="300">
         {% endif %}
-        <form action="/approve/{{ item.id }}" method="POST" style="display:inline;">
+        <form action="{{ url_for('approve_listing', item_id=item.id) }}" method="POST">
           <button>Approve</button>
         </form>
-        <form action="/reject/{{ item.id }}" method="POST" style="display:inline;">
+        <form action="{{ url_for('reject_listing', item_id=item.id) }}" method="POST">
           <button>Reject</button>
         </form>
       </div>
     {% endfor %}
     """, listings=listings)
 
-@app.route("/approve/<int:item_id>", methods=["POST"])
-@login_required
-def approve_listing(item_id):
-    if current_user.email != "ethanplm091@gmail.com":
-        abort(403)
 
-    listing = AccountListing.query.get_or_404(item_id)
-    listing.status = "approved"
-    db.session.commit()
-    return redirect("/admin/listings")
 
 
 

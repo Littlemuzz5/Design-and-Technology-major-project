@@ -2,40 +2,56 @@
 <html>
 <head>
     <title>Admin Panel</title>
+    <style>
+        .listing, .order {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        img {
+            max-width: 200px;
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>Admin Panel - Approve Orders & Listings</h1>
-    
+
     <h2>Orders</h2>
-    <ul>
+    <div>
       {% for order in orders %}
-        <li>
-          {{ order.username }} - {{ order.account_number }}
+        <div class="order">
+          <strong>{{ order.username }}</strong> - {{ order.account_number }}<br>
           <form action="/approve-order/{{ order.id }}" method="POST" style="display:inline;">
             <button type="submit">Approve</button>
           </form>
           <form action="/reject-order/{{ order.id }}" method="POST" style="display:inline;">
             <button type="submit">Reject</button>
           </form>
-        </li>
+        </div>
       {% endfor %}
-    </ul>
+    </div>
 
     <h2>Customer Listings</h2>
-    <ul>
+    <div>
       {% for listing in listings %}
-        <li>
-          {{ listing.title }} - {{ listing.price }}
+        <div class="listing">
+          {% if listing.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" alt="Listing Image">
+          {% endif %}
+          <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
           <form action="/approve-listing/{{ listing.id }}" method="POST" style="display:inline;">
             <button type="submit">Approve</button>
           </form>
           <form action="/reject-listing/{{ listing.id }}" method="POST" style="display:inline;">
             <button type="submit">Reject</button>
           </form>
-        </li>
+        </div>
       {% endfor %}
-    </ul>
+    </div>
 
     <a href="/">Back to Homepage</a>
 </body>
 </html>
+
