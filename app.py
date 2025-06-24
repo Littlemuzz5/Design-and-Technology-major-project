@@ -88,9 +88,9 @@ with app.app_context():
     MAIL_SERVER='smtp.gmail.com',
     MAIL_PORT=587,
     MAIL_USE_TLS=True,
-    MAIL_USERNAME='your_email@gmail.com',
-    MAIL_PASSWORD='your_email_password',  # App password recommended
-    MAIL_DEFAULT_SENDER='your_email@gmail.com'
+    MAIL_USERNAME='yourgmail@gmail.com',
+    MAIL_PASSWORD='ioqj xicg fzdl rsch',  # App password recommended
+    MAIL_DEFAULT_SENDER='yourgmail@gmail.com'
 )
 
 mail = Mail(app)
@@ -219,6 +219,36 @@ def email_confirmed_required(f):
             return redirect('/please-confirm')
         return f(*args, **kwargs)
     return decorated_function
+
+
+@app.route("/resend-confirmation", methods=["GET", "POST"])
+def resend_confirmation():
+    if request.method == "POST":
+        email = request.form.get("email")
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            return "Email not found.", 404
+        if user.confirmed:
+            return "Account already confirmed."
+
+        # Resend the confirmation link
+        token = s.dumps(email, salt='email-confirm')
+        link = url_for('confirm_email', token=token, _external=True)
+        msg = Message('Resend Confirmation - MuzzBoost', recipients=[email])
+        msg.body = f'Click here to confirm your account: {link}'
+        mail.send(msg)
+
+        return f"Confirmation email resent to {email}."
+
+    return render_template_string("""
+        <h2>Resend Confirmation Email</h2>
+        <form method="POST">
+            <label>Email:</label>
+            <input type="email" name="email" required>
+            <button type="submit">Resend</button>
+        </form>
+    """)
 
 
 
