@@ -19,43 +19,43 @@
     <h1>Admin Panel - Approve Orders & Listings</h1>
 
     <h2>Orders</h2>
-    <div>
-      {% for listing in listings %}
-  <li>
-    <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
-    {% if listing.image_filename %}
-      <img src="{{ url_for('static', filename='uploads/' ~ listing.image_filename) }}" width="200"><br>
-    {% else %}
-      <em>No image uploaded</em><br>
-    {% endif %}
-    <form action="/approve-listing/{{ listing.id }}" method="POST" style="display:inline;">
-      <button type="submit">Approve</button>
-    </form>
-    <form action="/reject-listing/{{ listing.id }}" method="POST" style="display:inline;">
-      <button type="submit">Reject</button>
-    </form>
-  </li>
-{% endfor %}
-
+<div>
+  {% for order in orders %}
+    <div class="order">
+      <strong>{{ order.title }}</strong> - ${{ order.price }}<br>
+      {% if order.image_filename %}
+        <img src="{{ url_for('static', filename='uploads/' ~ order.image_filename) }}" width="200"><br>
+      {% else %}
+        <em>No image uploaded</em><br>
+      {% endif %}
+      <form action="/approve-listing/{{ order.id }}" method="POST" style="display:inline;">
+        <button type="submit">Approve</button>
+      </form>
+      <form action="/reject-listing/{{ order.id }}" method="POST" style="display:inline;">
+        <button type="submit">Reject</button>
+      </form>
     </div>
+  {% endfor %}
+</div>
 
-    <h2>Customer Listings</h2>
-    <div>
-      {% for listing in listings %}
-        <div class="listing">
-          {% if listing.image_filename %}
-            <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" alt="Listing Image">
-          {% endif %}
-          <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
-          <form action="/approve-listing/{{ listing.id }}" method="POST" style="display:inline;">
-            <button type="submit">Approve</button>
-          </form>
-          <form action="/reject-listing/{{ listing.id }}" method="POST" style="display:inline;">
-            <button type="submit">Reject</button>
-          </form>
-        </div>
-      {% endfor %}
+<h2>Customer Listings</h2>
+<div>
+  {% for listing in listings %}
+    <div class="listing">
+      {% if listing.image_filename %}
+        <img src="{{ url_for('static', filename='uploads/' ~ listing.image_filename) }}" alt="Listing Image">
+      {% endif %}
+      <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
+      <form action="/approve-listing/{{ listing.id }}" method="POST" style="display:inline;">
+        <button type="submit">Approve</button>
+      </form>
+      <form action="/reject-listing/{{ listing.id }}" method="POST" style="display:inline;">
+        <button type="submit">Reject</button>
+      </form>
     </div>
+  {% endfor %}
+</div>
+
 
     <a href="/">Back to Homepage</a>
 </body>

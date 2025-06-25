@@ -157,13 +157,15 @@ def create_listing():
 
 @app.route("/admin")
 @login_required
-def admin_panel():
+def admin():
     if current_user.email != "ethanplm091@gmail.com":
-        return "Access denied", 403
+        abort(403)
 
-    orders = Order.query.all()
-    listings = AccountListing.query.all()
+    orders = AccountListing.query.filter(AccountListing.status == "pending", AccountListing.approved == False).all()
+    listings = AccountListing.query.filter(AccountListing.status == "pending", AccountListing.approved == True).all()
+    
     return render_template("admin.html", orders=orders, listings=listings)
+
 
 @app.route("/approve-order/<int:order_id>", methods=["POST"])
 @login_required
@@ -194,9 +196,10 @@ def approve_listing(item_id):
 
     listing = AccountListing.query.get_or_404(item_id)
     listing.status = "approved"
-    listing.approved = True 
+    listing.approved = True
     db.session.commit()
-    return redirect("/admin/listings")
+    return render_template("approval_success.html", listing=listing)
+
 
 
 @app.route("/reject-listing/<int:item_id>", methods=["POST"])
@@ -207,8 +210,10 @@ def reject_listing(item_id):
 
     listing = AccountListing.query.get_or_404(item_id)
     listing.status = "rejected"
+    listing.approved = False
     db.session.commit()
-    return redirect("/admin/listings")
+    return render_template("rejection_success.html", listing=listing)
+
 
 
 
@@ -303,7 +308,7 @@ def admin_listings():
 <ul>
   {% for listing in listings %}
     <li>
-      <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
+      <strong>{{ listing.title }}</strong> - {{ listing.price }}<br>
 <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" alt="Image for {{ listing.title }}" style="max-width: 200px; height: auto;"><br>
 
       {% if listing.image_filename %}
