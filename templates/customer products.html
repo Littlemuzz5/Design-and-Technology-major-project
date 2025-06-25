@@ -25,15 +25,10 @@
                     <p>{{ item.description }}</p>
                     <p><strong>Price:</strong> {{ item.price }}</p>
 
-                    {% if item.image_url %}
-                        <img src="{{ item.image_url }}" alt="Product Image" width="300">
+                    {% if item.image_filename %}
+                        <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" alt="Product Image" width="300">
                     {% endif %}
 
-                    {% if item.owner %}
-                        <p>Uploaded by {{ item.owner.email }}</p>
-                    {% else %}
-                        <p>Uploader unknown</p>
-                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}

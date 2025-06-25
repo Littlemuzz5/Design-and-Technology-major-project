@@ -216,6 +216,16 @@ def reject_listing(item_id):
 
 
 
+@app.route("/remove-listing/<int:item_id>", methods=["POST"])
+@login_required
+def remove_listing(item_id):
+    if current_user.email != "ethanplm091@gmail.com":
+        abort(403)
+
+    listing = AccountListing.query.get_or_404(item_id)
+    db.session.delete(listing)
+    db.session.commit()
+    return redirect("/admin")
 
 
 
@@ -331,10 +341,11 @@ def admin_listings():
 
 
 
-@app.route("/customer-products")
+@app.route('/customer-products')
 def customer_products():
-    listings = AccountListing.query.filter_by(approved=True).all()
-    return render_template("customer products.html", listings=listings)
+    approved_listings = AccountListing.query.filter_by(approved=True).all()
+    return render_template("customer_products.html", listings=approved_listings)
+
 
 
 
