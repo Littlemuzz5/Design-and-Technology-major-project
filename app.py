@@ -69,7 +69,7 @@ class AccountListing(db.Model):
     status = db.Column(db.String(20), default='pending')
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     image_filename = db.Column(db.String(255))
-
+    discord_username = db.Column(db.String(100), nullable=False)
     owner = db.relationship('User', backref='listings')
 
 
@@ -457,6 +457,7 @@ def submit_listing():
         title = request.form["title"]
         description = request.form["description"]
         price = request.form["price"]
+        discord_username = request.form["discord_username"]  # ✅ NEW
         file = request.files["image"]
 
         if not file or file.filename == '':
@@ -471,7 +472,8 @@ def submit_listing():
             title=title,
             description=description,
             price=price,
-            image_filename=filename,  # just the filename now
+            image_filename=filename,
+            discord_username=discord_username,  # ✅ NEW
             status="pending",
             owner_id=current_user.id
         )
@@ -481,6 +483,7 @@ def submit_listing():
         return redirect("/user")
     except Exception as e:
         return f"Error submitting listing: {e}", 500
+
 
 
 @app.route("/logout")

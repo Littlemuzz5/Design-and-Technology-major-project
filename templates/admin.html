@@ -22,7 +22,7 @@
 <div>
   {% for order in orders %}
     <div class="order">
-      <strong>{{ order.title }}</strong> - ${{ order.price }}<br>
+      <strong>{{ order.title }}</strong> - {{ order.price }}<br>
       {% if order.image_filename %}
         <img src="{{ url_for('static', filename='uploads/' ~ order.image_filename) }}" width="200"><br>
       {% else %}
@@ -45,7 +45,7 @@
       {% if listing.image_filename %}
         <img src="{{ url_for('static', filename='uploads/' ~ listing.image_filename) }}" alt="Listing Image">
       {% endif %}
-      <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
+      <strong>{{ listing.title }}</strong> - {{ listing.price }}<br>
       <form action="/approve-listing/{{ listing.id }}" method="POST" style="display:inline;">
         <button type="submit">Approve</button>
       </form>
@@ -63,8 +63,9 @@
       {% if listing.image_filename %}
         <img src="{{ url_for('static', filename='uploads/' ~ listing.image_filename) }}" width="200">
       {% endif %}
-      <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
+      <strong>{{ listing.title }}</strong> - {{ listing.price }}<br>
       <em>Uploaded by {{ listing.owner.email }}</em><br>
+      <p><strong>Discord:</strong> {{ listing.discord_username }}</p>
       <form action="/remove-listing/{{ listing.id }}" method="POST" style="display:inline;">
           <button type="submit" onclick="return confirm('Are you sure you want to remove this listing?')">Remove</button>
       </form>
