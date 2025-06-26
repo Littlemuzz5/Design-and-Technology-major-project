@@ -79,10 +79,14 @@ class AccountListing(db.Model):
     approved = db.Column(db.Boolean, default=False)
     status = db.Column(db.String(20), default='pending')
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    image_filename = db.Column(db.String(255))
+    image_filename = db.Column(db.String(255))  # Optional for single image fallback
     discord_username = db.Column(db.String(100), nullable=False)
+
     owner = db.relationship('User', backref='listings')
+
+    # This is correct for multiple images
     images = db.relationship('ListingImage', backref='listing', lazy=True, cascade='all, delete-orphan')
+
 
 
 
