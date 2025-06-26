@@ -90,6 +90,7 @@ class AccountListing(db.Model):
 
 
 
+images = request.files.getlist("images")
 
 
 
