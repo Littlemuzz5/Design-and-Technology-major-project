@@ -90,7 +90,7 @@ class AccountListing(db.Model):
 
 
 
-images = request.files.getlist("images")
+
 
 
 
@@ -479,6 +479,7 @@ def allowed_file(filename):
 @app.route("/submit-listing", methods=["POST"])
 @login_required
 def submit_listing():
+    images = request.files.getlist("images")
     try:
         title = request.form["title"]
         description = request.form["description"]
