@@ -3,18 +3,31 @@
 <head>
     <title>Admin Panel</title>
     <style>
-        .listing, .order {
-            margin-bottom: 20px;
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-        }
-        img {
-            max-width: 200px;
-            display: block;
-            margin-bottom: 10px;
-        }
-    </style>
+      .listing, .order {
+        margin-bottom: 20px;
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+      }
+      img {
+        max-width: 200px;
+        display: block;
+        margin-bottom: 10px;
+      }
+
+    /* Updated: image toggle styles for stacked-preview and stacked-img */
+      .stacked-img {
+        cursor: pointer;
+        display: none;
+      }
+      .stacked-preview {
+        cursor: pointer;
+        border: 2px solid #0074D9;
+        margin-bottom: 10px;
+      }
+</style>
+
 </head>
+
 <body>
     <h1>Admin Panel - Approve Orders & Listings</h1>
 
@@ -60,18 +73,40 @@
 <div>
   {% for listing in approved_listings %}
     <div class="listing">
-      {% if listing.image_filename %}
-        <img src="{{ url_for('static', filename='uploads/' ~ listing.image_filename) }}" width="200">
-      {% endif %}
+      <div class="image-stack" onclick="toggleImages(this)">
+        {% for image in listing.images %}
+          <img src="{{ url_for('static', filename='uploads/' ~ image.filename) }}" class="stacked-img" style="display: none;">
+        {% endfor %}
+        {% if listing.images %}
+          <img src="{{ url_for('static', filename='uploads/' ~ listing.images[0].filename) }}" class="stacked-preview">
+        {% endif %}
+      
+      </div>
+
       <strong>{{ listing.title }}</strong> - {{ listing.price }}<br>
       <em>Uploaded by {{ listing.owner.email }}</em><br>
       <p><strong>Discord:</strong> {{ listing.discord_username }}</p>
       <form action="/remove-listing/{{ listing.id }}" method="POST" style="display:inline;">
-          <button type="submit" onclick="return confirm('Are you sure you want to remove this listing?')">Remove</button>
+        <button type="submit" onclick="return confirm('Are you sure you want to remove this listing?')">Remove</button>
       </form>
     </div>
   {% endfor %}
 </div>
+
+<script>
+function toggleImages(container) {
+  const hiddenImages = container.querySelectorAll('.stacked-img');
+  const preview = container.querySelector('.stacked-preview');
+  const isVisible = hiddenImages[0]?.style.display === "block";
+
+  hiddenImages.forEach(img => {
+    img.style.display = isVisible ? "none" : "block";
+  });
+  preview.style.display = isVisible ? "block" : "none";
+}
+</script>
+
+
 
 
 

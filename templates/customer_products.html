@@ -4,7 +4,25 @@
     <meta charset="UTF-8">
     <title>Customer Products</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/background.css') }}">
+    <style>
+        .image-stack {
+            margin-top: 10px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            padding: 5px;
+        }
+        .stacked-img {
+            display: none;
+            max-width: 300px;
+            margin-bottom: 5px;
+        }
+        .stacked-preview {
+            display: block;
+            max-width: 300px;
+        }
+    </style>
 </head>
+
 <body>
     <header>
         <h1>Customer Uploaded Products</h1>
@@ -25,15 +43,34 @@
                     <p>{{ item.description }}</p>
                     <p><strong>Price:</strong> {{ item.price }}</p>
 
-                    {% if item.image_filename %}
-                        <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" alt="Product Image" width="300">
-                    {% endif %}
-
+                    <div class="image-stack" onclick="toggleImages(this)">
+                        {% for image in item.images %}
+                            <img src="{{ url_for('static', filename='uploads/' ~ image.filename) }}" class="stacked-img">
+                        {% endfor %}
+                        {% if item.images %}
+                            <img src="{{ url_for('static', filename='uploads/' ~ item.images[0].filename) }}" class="stacked-preview">
+                        {% endif %}
+                    </div>
                 </div>
             {% endfor %}
         {% else %}
             <p>No customer products have been approved yet.</p>
         {% endif %}
     </div>
+
+    <script>
+        function toggleImages(container) {
+            const hiddenImages = container.querySelectorAll('.stacked-img');
+            const preview = container.querySelector('.stacked-preview');
+            const isVisible = hiddenImages[0]?.style.display === "block";
+
+            hiddenImages.forEach(img => {
+                img.style.display = isVisible ? "none" : "block";
+            });
+            if (preview) {
+                preview.style.display = isVisible ? "block" : "none";
+            }
+        }
+    </script>
 </body>
 </html>

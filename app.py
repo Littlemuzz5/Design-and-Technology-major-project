@@ -19,6 +19,7 @@ app.secret_key = os.urandom(24)
 
 
 
+
 # -----------------------------
 # Database Setup
 # -----------------------------
@@ -36,6 +37,18 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+class ListingImage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(255), nullable=False)
+    listing_id = db.Column(db.Integer, db.ForeignKey('account_listing.id'), nullable=False)
+
+    listing = db.relationship("AccountListing", back_populates="images")
+
+# And in AccountListing:
+images = db.relationship("ListingImage", back_populates="listing", cascade="all, delete-orphan")
+
 
 
 # Task model (for the to-do feature)
@@ -323,9 +336,16 @@ def admin_listings():
       <strong>{{ listing.title }}</strong> - {{ listing.price }}<br>
 <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" alt="Image for {{ listing.title }}" style="max-width: 200px; height: auto;"><br>
 
-      {% if listing.image_filename %}
-        <img src="{{ url_for('static', filename='uploads/' + listing.image_filename) }}" width="200"><br>
-      {% endif %}
+        <div class="image-stack" onclick="toggleImages(this)">
+  {% for image in listing.images %}
+    <img src="{{ url_for('static', filename='uploads/' ~ image.filename) }}" class="stacked-img" style="display: none;">
+  {% endfor %}
+  {% if listing.images %}
+    <img src="{{ url_for('static', filename='uploads/' ~ listing.images[0].filename) }}" class="stacked-preview">
+  {% endif %}
+</div>
+
+
       <form action="/approve-listing/{{ listing.id }}" method="POST" style="display:inline;">
         <button type="submit">Approve</button>
       </form>
@@ -457,32 +477,36 @@ def submit_listing():
         title = request.form["title"]
         description = request.form["description"]
         price = request.form["price"]
-        discord_username = request.form["discord_username"]  # ✅ NEW
-        file = request.files["image"]
+        discord_username = request.form["discord_username"]
+        files = request.files.getlist("images")
 
-        if not file or file.filename == '':
-            return "No image selected", 400
-        if not allowed_file(file.filename):
-            return "Invalid file type", 400
-
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        if not files or all(f.filename == '' for f in files):
+            return "No images selected", 400
 
         listing = AccountListing(
             title=title,
             description=description,
             price=price,
-            image_filename=filename,
-            discord_username=discord_username,  # ✅ NEW
+            discord_username=discord_username,
             status="pending",
             owner_id=current_user.id
         )
-
         db.session.add(listing)
+        db.session.flush()  # So we get listing.id before commit
+
+        for file in files:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(filepath)
+                image = ListingImage(filename=filename, listing=listing)
+                db.session.add(image)
+
         db.session.commit()
         return redirect("/user")
     except Exception as e:
         return f"Error submitting listing: {e}", 500
+
 
 
 
