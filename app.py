@@ -46,11 +46,6 @@ class ListingImage(db.Model):
     listing_id = db.Column(db.Integer, db.ForeignKey('account_listing.id'), nullable=False)
 
 
-    listing = db.relationship("AccountListing", back_populates="images")
-
-# And in AccountListing:
-images = db.relationship("ListingImage", back_populates="listing", cascade="all, delete-orphan")
-
 
 
 # Task model (for the to-do feature)
@@ -88,8 +83,6 @@ class AccountListing(db.Model):
     discord_username = db.Column(db.String(100), nullable=False)
     owner = db.relationship('User', backref='listings')
     images = db.relationship('ListingImage', backref='listing', lazy=True, cascade='all, delete-orphan')
-
-    listing = db.relationship("AccountListing", back_populates="images")
 
 
 
