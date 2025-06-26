@@ -40,9 +40,11 @@ def load_user(user_id):
 
 
 class ListingImage(db.Model):
+    __tablename__ = 'listing_image'
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(255), nullable=False)
     listing_id = db.Column(db.Integer, db.ForeignKey('account_listing.id'), nullable=False)
+
 
     listing = db.relationship("AccountListing", back_populates="images")
 
@@ -74,6 +76,7 @@ class User(UserMixin, db.Model):
     confirmed = db.Column(db.Boolean, default=False)
 
 class AccountListing(db.Model):
+    __tablename__ = 'account_listing'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -84,6 +87,11 @@ class AccountListing(db.Model):
     image_filename = db.Column(db.String(255))
     discord_username = db.Column(db.String(100), nullable=False)
     owner = db.relationship('User', backref='listings')
+    images = db.relationship('ListingImage', backref='listing', lazy=True, cascade='all, delete-orphan')
+
+    listing = db.relationship("AccountListing", back_populates="images")
+
+
 
 
 
