@@ -157,14 +157,16 @@ def create_listing():
 
 @app.route("/admin")
 @login_required
-def admin():
+def admin_panel():
     if current_user.email != "ethanplm091@gmail.com":
         abort(403)
 
-    orders = AccountListing.query.filter(AccountListing.status == "pending", AccountListing.approved == False).all()
-    listings = AccountListing.query.filter(AccountListing.status == "pending", AccountListing.approved == True).all()
-    
-    return render_template("admin.html", orders=orders, listings=listings)
+    orders = AccountListing.query.filter_by(status="pending", approved=False).all()
+    listings = AccountListing.query.filter_by(status="pending", approved=False).all()
+    approved_listings = AccountListing.query.filter_by(status="approved", approved=True).all()
+
+    return render_template("admin.html", orders=orders, listings=listings, approved_listings=approved_listings)
+
 
 
 @app.route("/approve-order/<int:order_id>", methods=["POST"])

@@ -58,21 +58,20 @@
 
 <h2>✅ Approved Orders</h2>
 <div>
-  {% for listing in listings %}
-    {% if listing.approved %}
-      <div class="listing">
-        {% if listing.image_filename %}
-          <img src="{{ url_for('static', filename='uploads/' ~ listing.image_filename) }}" width="200">
-        {% endif %}
-        <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
-        <em>Uploaded by {{ listing.owner.email }}</em><br>
-        <form action="/remove-listing/{{ listing.id }}" method="POST" style="display:inline;">
-            <button type="submit" onclick="return confirm('Are you sure you want to remove this listing?')">Remove</button>
-        </form>
-      </div>
-    {% endif %}
+  {% for listing in approved_listings %}
+    <div class="listing">
+      {% if listing.image_filename %}
+        <img src="{{ url_for('static', filename='uploads/' ~ listing.image_filename) }}" width="200">
+      {% endif %}
+      <strong>{{ listing.title }}</strong> - ${{ listing.price }}<br>
+      <em>Uploaded by {{ listing.owner.email }}</em><br>
+      <form action="/remove-listing/{{ listing.id }}" method="POST" style="display:inline;">
+          <button type="submit" onclick="return confirm('Are you sure you want to remove this listing?')">Remove</button>
+      </form>
+    </div>
   {% endfor %}
 </div>
+
 
 
 
