@@ -44,14 +44,6 @@
       <p>You have not submitted any orders yet.</p>
     {% endif %}
 
-    <div class="submit-form">
-      <h3>Submit a New Order</h3>
-      <form action="/payment" method="POST">
-        <input type="text" name="username" placeholder="Your Discord Name" required>
-        <input type="email" name="email" value="{{ user.email }}" readonly>
-        <input type="text" name="accountName" placeholder="Account Name or Details" required>
-        <button type="submit">Submit Order</button>
-      </form>
 
       <h2>Submit a Product to Customer Listings</h2>
 <form action="/submit-listing" method="POST" enctype="multipart/form-data">
