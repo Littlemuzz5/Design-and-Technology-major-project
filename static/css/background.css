@@ -3,37 +3,49 @@
 }
 
 body {
-  background-image: url("/static/images/your-background.jpg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: #333;
+        }
 
 header {
-  background-color: rgba(0, 157, 255, 0.7);
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
+            background: rgba(0, 120, 212, 1);
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
 
 nav {
-    background-color: #333;
-    padding: 10px;
-    text-align: center;
-}
+            background: #333;
+            color: white;
+            padding: 0.5rem 1rem;
+        }
 
 nav a {
-    color: white;
-    margin: 0 10px;
-    text-decoration: none;
-}
+            color: white;
+            margin: 0 1rem;
+            text-decoration: none;
+        }
 
 nav a:hover {
-    text-decoration: underline;
-}
+            text-decoration: underline;
+        }
 
+.container {
+            padding: 1rem;
+        }
+
+footer {
+            background: #222;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
 
 p, h1, h2 {
     color:rgb(56, 22, 168)
