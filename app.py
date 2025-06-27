@@ -391,6 +391,9 @@ def payment():
         db.session.commit()
         return redirect("/user")
 
+    # ✅ Render your custom payment page on GET request
+    return render_template("payment.html")
+
     
     
 
