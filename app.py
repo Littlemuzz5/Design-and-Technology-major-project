@@ -179,7 +179,8 @@ def create_listing():
 def admin_panel():
     if current_user.email != "ethanplm091@gmail.com":
         abort(403)
-
+    
+    orders = Order.query.all()
     orders = AccountListing.query.filter_by(status="pending", approved=False).all()
     listings = AccountListing.query.filter_by(status="pending", approved=False).all()
     approved_listings = AccountListing.query.filter_by(status="approved", approved=True).all()

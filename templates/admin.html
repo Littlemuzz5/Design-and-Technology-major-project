@@ -69,19 +69,18 @@
   {% endfor %}
 </div>
 
-<h2>✅ Approved Orders</h2>
+<h2>Submitted Orders</h2>
 <div>
-  {% for listing in approved_listings %}
-    <div class="listing">
-      <div class="image-stack" onclick="toggleImages(this)">
-        {% for image in listing.images %}
-          <img src="{{ url_for('static', filename='uploads/' ~ image.filename) }}" class="stacked-img" style="display: none;">
-        {% endfor %}
-        {% if listing.images %}
-          <img src="{{ url_for('static', filename='uploads/' ~ listing.images[0].filename) }}" class="stacked-preview">
-        {% endif %}
-      
-      </div>
+  {% for order in orders %}
+    <div class="order" style="border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem;">
+      <strong>Order ID:</strong> {{ order.id }}<br>
+      <strong>Discord Name:</strong> {{ order.username }}<br>
+      <strong>Email:</strong> {{ order.email }}<br>
+      <strong>Account Details:</strong> {{ order.account_number }}<br>
+    </div>
+  {% endfor %}
+</div>
+
 
       <strong>{{ listing.title }}</strong> - {{ listing.price }}<br>
       <em>Uploaded by {{ listing.owner.email }}</em><br>
