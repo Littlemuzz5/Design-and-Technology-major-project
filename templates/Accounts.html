@@ -4,12 +4,54 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/background.css') }}">
     <title>Accounts</title>
+    <style>
+        header {
+            background: #0078D4;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        nav {
+            background: #333;
+            color: white;
+            padding: 0.5rem 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        nav a {
+            color: white; 
+            margin: 0 1rem;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .body {
+            background-color: grey;
+            padding: 1rem;
+        }
+
+        .body img {
+            display: block;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .nav {
+            margin-top: 1rem;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <div class=header>
+    <header>
         <h1>Accounts</h1>
-    </div>
-    <div class=nav>
+    </header>
     <nav>
     <a href="/">Muzzboost Homepage</a>
     <a href="/hard-unlock">Hard unlocks</a>

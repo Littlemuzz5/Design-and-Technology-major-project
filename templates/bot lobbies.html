@@ -1,34 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/background.css') }}">
-    <title>Bot Lobbies</title>
-</head>
-<style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            color: #333;
-        }
-
+    <style>
         header {
             background: #0078D4;
             color: white;
             padding: 1rem 0;
             text-align: center;
         }
-
         nav {
             background: #333;
             color: white;
             padding: 0.5rem 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
         }
 
         nav a {
-            color: white;
+            color: white; 
             margin: 0 1rem;
             text-decoration: none;
         }
@@ -37,20 +27,27 @@
             text-decoration: underline;
         }
 
-        .container {
+        .body {
+            background-color: grey;
             padding: 1rem;
         }
 
-        footer {
-            background: #222;
-            color: white;
-            text-align: center;
-            padding: 1rem 0;
-            position: fixed;
-            bottom: 0;
+        .body img {
+            display: block;
             width: 100%;
+            margin: 1rem 0;
+        }
+
+        .nav {
+            margin-top: 1rem;
+            text-align: center;
         }
     </style>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/background.css') }}">
+    <title>Bot Lobbies</title>
+</head>
 <body>
     <header>
     <h1>Bot Lobbies</h1>
@@ -95,11 +92,12 @@
         
             <p>And have fun!</p>
         </div>
-        <img src="{{ url_for('static', filename='images/20241122_222312.jpg') }}" alt="in game bots with pssoble amount of kills" width="700" height="auto">
-        <label>
-            <div class="nav">
-                <a href="/payment#column1" class="button">Link Button</a>
-            </div>
+        <img src="{{ url_for('static', filename='images/20241122_222312.jpg') }}" alt="in game bots with pssoble amount of kills">
+
+        <div class="nav">
+            <a href="/payment#column1" class="button">Payment Page</a>
+        </div>
+
     </div>
 </body>
 </html>

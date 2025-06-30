@@ -2,44 +2,48 @@
     box-sizing: border-box;
 }
 
-p, h1, h2 {
-    color:rgb(0, 0, 0)
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: grey;
 }
+
+
 div.bodycol1 {
-    background-color: purple;
+    background-color: grey;
     width: 50%;
     display: inline-block;
 }
 div.bodycol2 {
-    background-color: pink;
+    background-color: grey;
     width: 50%;
     display: inline-block;
     float:right;
 }
 div.bodycol3 {
-    background-color: violet;
+    background-color: grey;
     width: 50%;
     display:inline-block;
 }
 div.bodycol4 {
-    background-color: rgb(16, 192, 39);
+    background-color: grey;
     width: 50%;
     display:inline-block;
     float:right;
 }
 div.bodycol5 {
-    background-color: rgb(14, 121, 41);
+    background-color: grey;
     width: 50%;
     display:inline-block;
     float:right;
 }
 div.bodycol6 {
-    background-color: rgb(16, 169, 192);
+    background-color: grey;
     width: 50%;
     display:inline-block;
 }
 div.bodycol7 {
-    background-color: rgb(13, 234, 156);
+    background-color: grey;
     width: 50%;
     display:inline-block;
 }
@@ -72,7 +76,7 @@ div.body img {
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
-}
+    }
 .modal {
   display: none;
   position: fixed;
