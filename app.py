@@ -453,7 +453,26 @@ def signup():
         token = s.dumps(email, salt='email-confirm')
         link = url_for('confirm_email', token=token, _external=True)
         msg = Message('Confirm your email', recipients=[email])
-        msg.body = f'Click here to confirm your account: {link}'
+        msg.html = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 30px;">
+                <div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                    <h2 style="color: #0074D9;">Welcome to MuzzBoost</h2>
+                    <p>Hi there,</p>
+                    <p>Thank you for signing up! To complete your registration, please verify your email address by clicking the button below:</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                    <a href="{link}" style="background-color: #0074D9; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                        Confirm My Email
+                    </a>
+                </div>
+                <p>If you did not request this, you can safely ignore this email.</p>
+                <hr style="margin-top: 40px;">
+                <p style="font-size: 12px; color: #888;">MuzzBoost Team<br>Do not reply to this automated email.</p>
+            </div>
+        </body>
+    </html>
+    """
+
 
         mail.send(msg)  # Might be the breaking line
 
