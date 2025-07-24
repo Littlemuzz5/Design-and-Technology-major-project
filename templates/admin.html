@@ -27,6 +27,25 @@
 </style>
 
 </head>
+<hr>
+<h2>👑 Manage Admins</h2>
+<form method="POST" action="/admin/manage">
+    <input type="email" name="email" placeholder="admin@example.com" required>
+    <button type="submit" name="action" value="add">Add Admin</button>
+    <button type="submit" name="action" value="remove" onclick="return confirm('Remove this admin?')">Remove Admin</button>
+</form>
+
+<h3>Current Admins:</h3>
+<ul>
+  {% for admin in admins %}
+    <li>
+      {{ admin.email }}
+      {% if admin.email == "ethanplm091@gmail.com" %}
+        <strong>(permanent)</strong>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
 
 <body>
     <h1>Admin Panel - Approve Orders & Listings</h1>

@@ -87,6 +87,9 @@ class AccountListing(db.Model):
     # This is correct for multiple images
     images = db.relationship('ListingImage', backref='listing', lazy=True, cascade='all, delete-orphan')
 
+class Admin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
 
 
 
@@ -177,20 +180,22 @@ def create_listing():
 @app.route("/admin")
 @login_required
 def admin_panel():
-    if current_user.email != "ethanplm091@gmail.com":
+    if not is_admin(current_user.email):
         abort(403)
     orders = AccountListing.query.filter_by(status="pending", approved=False).all()
     listings = AccountListing.query.filter_by(status="pending", approved=False).all()
     approved_listings = AccountListing.query.filter_by(status="approved", approved=True).all()
 
-    return render_template("admin.html", orders=orders, listings=listings, approved_listings=approved_listings)
+    admins = Admin.query.all()
+    return render_template("admin.html", orders=orders, listings=listings, approved_listings=approved_listings, admins=admins)
+
 
 
 
 @app.route("/approve-order/<int:order_id>", methods=["POST"])
 @login_required
 def approve_order(order_id): 
-    if current_user.email != "ethanplm091@gmail.com":
+    if not is_admin(current_user.email):
         return "Access denied", 403
     order = Order.query.get_or_404(order_id)
     # You can add logic here like setting order.approved = True
@@ -201,7 +206,7 @@ def approve_order(order_id):
 @app.route("/reject-order/<int:order_id>", methods=["POST"])
 @login_required
 def reject_order(order_id):
-    if current_user.email != "ethanplm091@gmail.com":
+    if not is_admin(current_user.email):
         return "Access denied", 403
     order = Order.query.get_or_404(order_id)
     db.session.delete(order)
@@ -211,7 +216,7 @@ def reject_order(order_id):
 @app.route("/approve-listing/<int:item_id>", methods=["POST"])
 @login_required
 def approve_listing(item_id):
-    if current_user.email != "ethanplm091@gmail.com":
+    if not is_admin(current_user.email):
         abort(403)
 
     listing = AccountListing.query.get_or_404(item_id)
@@ -225,7 +230,7 @@ def approve_listing(item_id):
 @app.route("/reject-listing/<int:item_id>", methods=["POST"])
 @login_required
 def reject_listing(item_id):
-    if current_user.email != "ethanplm091@gmail.com":
+    if not is_admin(current_user.email):
         abort(403)
 
     listing = AccountListing.query.get_or_404(item_id)
@@ -239,7 +244,7 @@ def reject_listing(item_id):
 @app.route("/remove-listing/<int:item_id>", methods=["POST"])
 @login_required
 def remove_listing(item_id):
-    if current_user.email != "ethanplm091@gmail.com":
+    if not is_admin(current_user.email):
         abort(403)
 
     listing = AccountListing.query.get_or_404(item_id)
@@ -269,15 +274,16 @@ def confirm_email(token):
     try:
         email = s.loads(token, salt="email-confirm", max_age=3600)
     except:
-        return "Link expired or invalid"
+        return render_template("invalid_token.html")
 
     user = User.query.filter_by(email=email).first_or_404()
     if user.confirmed:
-        return "Already confirmed."
-    
+        return render_template("already_confirmed.html")
+
     user.confirmed = True
     db.session.commit()
-    return "Email confirmed!"
+    return render_template("email_confirmed.html")
+
 
 
 
@@ -326,7 +332,7 @@ def resend_confirmation():
 @app.route("/admin/listings")
 @login_required
 def admin_listings():
-    if current_user.email != "ethanplm091@gmail.com":
+    if not is_admin(current_user.email):
         abort(403)
 
     listings = AccountListing.query.filter_by(status="pending").all()
@@ -689,6 +695,38 @@ def editor():
                 file_content = f.read()
 
     return render_template("editor.html", pages=pages, content=file_content, selected=selected_page)
+
+
+
+def is_admin(email):
+    if email == "ethanplm091@gmail.com":
+        return True
+    return Admin.query.filter_by(email=email).first() is not None
+
+@app.route("/admin/manage", methods=["GET", "POST"])
+@login_required
+def manage_admins():
+    if not is_admin(current_user.email):
+        abort(403)
+
+    admins = Admin.query.all()
+    if request.method == "POST":
+        action = request.form.get("action")
+        email = request.form.get("email").strip().lower()
+
+        if action == "add":
+            if not Admin.query.filter_by(email=email).first():
+                db.session.add(Admin(email=email))
+                db.session.commit()
+        elif action == "remove" and email != "ethanplm091@gmail.com":
+            admin = Admin.query.filter_by(email=email).first()
+            if admin:
+                db.session.delete(admin)
+                db.session.commit()
+
+        return redirect("/admin")
+
+    return render_template("manage_admins.html", admins=admins)
 
 
 # -----------------------------
