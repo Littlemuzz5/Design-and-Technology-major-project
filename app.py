@@ -133,6 +133,17 @@ SQL_INJECTION_PATTERNS = [
     r"(\bdrop\b|\bdelete\b|\binsert\b|\bupdate\b)"
 ]
 
+def handle_sql_injection_attempt(field_name, field_value):
+    if is_suspected_sql_injection(field_value):
+        ip = request.remote_addr
+        msg = Message(
+            subject="⚠️ SQL Injection Attempt Blocked",
+            recipients=["muzzboost@gmail.com"],
+            body=f"🚨 SQL injection detected!\nField: {field_name}\nInput: {field_value}\nIP Address: {ip}"
+        )
+        mail.send(msg)
+
+
 def is_suspected_sql_injection(input_text):
     for pattern in SQL_INJECTION_PATTERNS:
         if re.search(pattern, input_text, re.IGNORECASE):
