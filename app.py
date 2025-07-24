@@ -9,6 +9,7 @@ from functools import wraps
 import os
 from werkzeug.utils import secure_filename
 from flask_migrate import Migrate
+import re
 
 
 
@@ -91,6 +92,11 @@ class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
 
+class BannedIP(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String(100), unique=True, nullable=False)
+
+
 
 
 
@@ -103,8 +109,6 @@ class Admin(db.Model):
 with app.app_context():
     db.drop_all()
     db.create_all()
-
-
 
 
     app.config.update(
@@ -122,6 +126,26 @@ s = URLSafeTimedSerializer(app.secret_key)
 # -----------------------------
 # Page Routes
 # -----------------------------
+SQL_INJECTION_PATTERNS = [
+    r"(\bor\b|\band\b).*(=|like)",  # e.g., ' or 1=1 --
+    r"['\";`]",                     # quote characters
+    r"(union\s+select)",           # common SQLi vector
+    r"(\bdrop\b|\bdelete\b|\binsert\b|\bupdate\b)"
+]
+
+def is_suspected_sql_injection(input_text):
+    for pattern in SQL_INJECTION_PATTERNS:
+        if re.search(pattern, input_text, re.IGNORECASE):
+            return True
+    return False
+
+
+@app.before_request
+def block_banned_ips():
+    ip = request.remote_addr
+    if BannedIP.query.filter_by(ip_address=ip).first():
+        abort(403)
+
 
 @app.route("/")
 def home():
@@ -187,9 +211,20 @@ def admin_panel():
     approved_listings = AccountListing.query.filter_by(status="approved", approved=True).all()
 
     admins = Admin.query.all()
-    return render_template("admin.html", orders=orders, listings=listings, approved_listings=approved_listings, admins=admins)
+    banned_ips = BannedIP.query.all()
+    return render_template("admin.html", orders=orders, listings=listings, approved_listings=approved_listings, admins=admins, banned_ips=banned_ips)
 
 
+@app.route("/ban-ip", methods=["POST"])
+@login_required
+def ban_ip():
+    if not is_admin(current_user.email):
+        abort(403)
+    ip = request.form.get("ip")
+    if not BannedIP.query.filter_by(ip_address=ip).first():
+        db.session.add(BannedIP(ip_address=ip))
+        db.session.commit()
+    return redirect("/admin")
 
 
 @app.route("/approve-order/<int:order_id>", methods=["POST"])
@@ -442,8 +477,12 @@ def delete_task(task_id):
 def signup():
     try:
         email = request.form.get("email")
+        handle_sql_injection_attempt("email", email)
+
         password = request.form.get("psw")
         repeat = request.form.get("psw-repeat")
+
+
 
         if not email or not password or password != repeat:
             return "Invalid input or passwords do not match", 400
@@ -559,7 +598,9 @@ def logout():
 def login():
     if request.method == 'POST':
         email = request.form['email']
+        handle_sql_injection_attempt("email", email)
         password = request.form['password']
+
 
         # 🐛 Debug logs
         print(f"Login attempt: {email} / {password}")
