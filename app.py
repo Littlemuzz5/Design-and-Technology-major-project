@@ -303,14 +303,72 @@ def remove_listing(item_id):
 @app.route("/please-confirm")
 def please_confirm():
     return render_template_string("""
-    <h2>Please Confirm Your Email</h2>
-    <p>We've sent a confirmation link to your email. Click it to activate your account.</p>
-    <p>If you didn’t receive the email, you can request a new one below:</p>
-    
-    <form method="POST" action="/resend-confirmation">
-        <input type="email" name="email" placeholder="Enter your email again" required>
-        <button type="submit">Resend Confirmation Email</button>
-    </form>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Confirm Your Email</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f8f9fa;
+                padding: 40px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+            .container {
+                background: #fff;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                max-width: 500px;
+                width: 100%;
+                text-align: center;
+            }
+            h2 {
+                color: #007bff;
+            }
+            p {
+                margin: 15px 0;
+                color: #333;
+            }
+            input[type="email"] {
+                width: 100%;
+                padding: 10px;
+                margin-top: 10px;
+                margin-bottom: 20px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            button {
+                background-color: #007bff;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Email Confirmation Required</h2>
+            <p>We've sent a confirmation link to your email address.</p>
+            <p>Please click the link in your inbox to activate your account.</p>
+            <p>If you didn't receive the email, you can request another below:</p>
+            <form method="POST" action="/resend-confirmation">
+                <input type="email" name="email" placeholder="Enter your email address" required>
+                <button type="submit">Resend Confirmation Email</button>
+            </form>
+        </div>
+    </body>
+    </html>
     """)
 
 
