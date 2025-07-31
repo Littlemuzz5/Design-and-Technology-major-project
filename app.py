@@ -25,7 +25,7 @@ app.secret_key = os.urandom(24)
 # Database Setup
 # -----------------------------
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://muzzboost_db_user:CCHQQ8Hk6JBONu3hp1kwgM6a8SlT7Ufl@dpg-d0j2k32dbo4c73bvb5cg-a/muzzboost_db?sslmode=require"
-app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')  # Create this folder if it doesn't exist
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads') 
 db = SQLAlchemy(app)
 
 
@@ -85,7 +85,6 @@ class AccountListing(db.Model):
 
     owner = db.relationship('User', backref='listings')
 
-    # This is correct for multiple images
     images = db.relationship('ListingImage', backref='listing', lazy=True, cascade='all, delete-orphan')
 
 class Admin(db.Model):
@@ -116,7 +115,7 @@ with app.app_context():
     MAIL_PORT=587,
     MAIL_USE_TLS=True,
     MAIL_USERNAME='Muzzboost@gmail.com',
-    MAIL_PASSWORD='ujpt ggtd uscw fmzt',  # App password recommended
+    MAIL_PASSWORD='ujpt ggtd uscw fmzt', 
     MAIL_DEFAULT_SENDER='Muzzboost@gmail.com'
 )
 
@@ -244,8 +243,7 @@ def approve_order(order_id):
     if not is_admin(current_user.email):
         return "Access denied", 403
     order = Order.query.get_or_404(order_id)
-    # You can add logic here like setting order.approved = True
-    db.session.delete(order)  # or mark as processed
+    db.session.delete(order)
     db.session.commit()
     return redirect("/admin")
 
@@ -501,7 +499,6 @@ def payment():
         db.session.commit()
         return redirect("/user")
 
-    # ✅ Render your custom payment page on GET request
     return render_template("payment.html")
 
     
@@ -588,7 +585,7 @@ def signup():
     """
 
 
-        mail.send(msg)  # Might be the breaking line
+        mail.send(msg)
 
         return redirect("/please-confirm")
 
@@ -634,7 +631,7 @@ def submit_listing():
             owner_id=current_user.id
         )
         db.session.add(listing)
-        db.session.flush()  # So we get listing.id before commit
+        db.session.flush()  
 
         for file in files:
             if file and allowed_file(file.filename):
