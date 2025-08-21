@@ -699,8 +699,6 @@ def user_dashboard():
 # Admin Page
 # -----------------------------
 
-def check_auth(username, password):
-    return username == "admin" and password == "Littlemuzz30"
 
 def authenticate():
     return Response(
