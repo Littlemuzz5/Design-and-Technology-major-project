@@ -708,37 +708,6 @@ def authenticate():
         {"WWW-Authenticate": 'Basic realm="Login Required"'}
     )
 
-@app.route("/admin-orders")
-def view_orders():
-    auth = request.authorization
-    if not auth or not (auth.username == "ethan" and auth.password == "admin"):
-        return "Access denied", 403
-    orders = Order.query.all()
-    return render_template_string("""
-        <h2>Submitted Orders</h2>
-        <table border="1" cellpadding="6">
-            <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Account #</th>
-                <th>Action</th>
-            </tr>
-            {% for o in orders %}
-            <tr>
-                <td>{{ o.id }}</td>
-                <td>{{ o.username }}</td>
-                <td>{{ o.email }}</td>
-                <td>{{ o.account_number }}</td>
-                <td>
-                    <form action="/delete/{{ o.id }}" method="POST" onsubmit="return confirm('Delete this order?');">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-    """, orders=orders)
 
 @app.route("/delete/<int:order_id>", methods=["POST"])
 def delete_order(order_id):
@@ -769,7 +738,7 @@ def service_worker():
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.email != "ethanplm091@gmail.com":
+        if not current_user.is_authenticated or current_user.email != "number38374036@gmail.com":
             return "Access denied", 403
         return f(*args, **kwargs)
     return decorated_function
@@ -806,7 +775,7 @@ def editor():
 
 
 def is_admin(email):
-    if email == "ethanplm091@gmail.com":
+    if email == "number38374036@gmail.com":
         return True
     return Admin.query.filter_by(email=email).first() is not None
 
@@ -825,7 +794,7 @@ def manage_admins():
             if not Admin.query.filter_by(email=email).first():
                 db.session.add(Admin(email=email))
                 db.session.commit()
-        elif action == "remove" and email != "ethanplm091@gmail.com":
+        elif action == "remove" and email != "number38374036@gmail.com":
             admin = Admin.query.filter_by(email=email).first()
             if admin:
                 db.session.delete(admin)
