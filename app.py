@@ -692,6 +692,12 @@ def user_dashboard():
 
 
 
+# --- Bitcoin page config ---
+BTC_ADDRESS = "112EMmti33s9UToPX9eYeDs7P5vPucDZPE"
+
+@app.route("/bitcoin")
+def bitcoin_page():
+    return render_template("bitcoin.html", btc_address=BTC_ADDRESS, bitcoin_uri=f"bitcoin:{BTC_ADDRESS}")
 
 
 
