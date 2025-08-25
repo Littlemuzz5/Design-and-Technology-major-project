@@ -699,6 +699,14 @@ BTC_ADDRESS = "112EMmti33s9UToPX9eYeDs7P5vPucDZPE"
 def bitcoin_page():
     return render_template("bitcoin.html", btc_address=BTC_ADDRESS, bitcoin_uri=f"bitcoin:{BTC_ADDRESS}")
 
+# --- PayPal page ---
+DISCORD_INVITE = "https://discord.gg/vhuZpxmWmu"
+
+@app.route("/paypal")
+def paypal_page():
+    return render_template("paypal.html", discord_invite=DISCORD_INVITE)
+
+
 
 
 # -----------------------------
