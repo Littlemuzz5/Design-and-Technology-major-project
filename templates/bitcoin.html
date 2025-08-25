@@ -4,70 +4,52 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Bitcoin Address</title>
-  <meta name="description" content="Send BTC to this address." />
-
   <style>
     :root{
-      --bg:#0b1020;
-      --card:#11172e;
-      --ink:#e9eefc;
-      --muted:#a9b3d6;
-      --brand:#4e7cff;
-      --accent:#1bd19c;
-      --ring:rgba(78,124,255,.35);
+      --bg:#0b1020; --card:#11172e; --ink:#e9eefc; --muted:#a9b3d6;
+      --brand:#4e7cff; --accent:#1bd19c; --ring:rgba(78,124,255,.35);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
-      background: linear-gradient(180deg, #0a0f1f, #0b1428 60%, #0a0f1f);
+      background: linear-gradient(180deg,#0a0f1f,#0b1428 60%,#0a0f1f);
       color:var(--ink); display:flex; align-items:center; justify-content:center; padding:24px;
     }
     .card{
-      width:100%; max-width:720px; background:var(--card); border:1px solid rgba(255,255,255,.06);
-      border-radius:18px; box-shadow:0 20px 40px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.03) inset;
+      width:100%; max-width:820px; background:var(--card);
+      border:1px solid rgba(255,255,255,.06); border-radius:18px;
+      box-shadow:0 20px 40px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.03) inset;
       overflow:hidden;
     }
     .hero{
       display:flex; align-items:center; gap:14px; padding:24px 28px; background:
-      radial-gradient(1200px 600px at -10% -100%, rgba(27,209,156,.12), transparent 60%),
-      linear-gradient(90deg, rgba(78,124,255,.16), transparent 60%);
+        radial-gradient(1200px 600px at -10% -100%, rgba(27,209,156,.12), transparent 60%),
+        linear-gradient(90deg, rgba(78,124,255,.16), transparent 60%);
       border-bottom:1px solid rgba(255,255,255,.06);
     }
     .hero svg{flex:0 0 40px; filter:drop-shadow(0 6px 18px rgba(27,209,156,.3))}
-    h1{font-size:22px; margin:0}
-    .sub{margin:4px 0 0; color:var(--muted); font-size:14px}
-
-    .body{padding:26px 28px}
-    .row{display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; margin:18px 0 10px}
+    h1{font-size:28px; margin:0}
+    .sub{margin:6px 0 0; color:var(--muted); font-size:15px}
+    .body{padding:22px 28px}
+    .row{display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center;}
     .address{
-      padding:14px 16px; border-radius:12px; background:#0b1126; border:1px solid rgba(255,255,255,.06);
-      font:600 16px ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      padding:16px 18px; border-radius:14px; background:#0b1126;
+      border:1px solid rgba(255,255,255,.06);
+      font:700 18px ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
       word-break:break-all; letter-spacing:.2px;
     }
     .btn{
       appearance:none; border:1px solid rgba(255,255,255,.12); background:#0d1530; color:var(--ink);
-      padding:12px 14px; border-radius:12px; font-weight:600; cursor:pointer;
+      padding:12px 18px; border-radius:14px; font-weight:700; cursor:pointer;
       transition:transform .04s ease, border-color .2s ease, box-shadow .2s ease;
     }
     .btn:hover{border-color:var(--brand); box-shadow:0 0 0 4px var(--ring)}
     .btn:active{transform:translateY(1px)}
-    .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-top:18px}
-    .panel{
-      padding:16px; background:#0b1126; border:1px solid rgba(255,255,255,.06); border-radius:12px;
+    @media (max-width:560px){
+      h1{font-size:22px}
+      .address{font-size:16px}
     }
-    .panel h3{margin:0 0 8px; font-size:14px; color:var(--muted); font-weight:600; letter-spacing:.3px}
-    .panel .qr{display:flex; align-items:center; justify-content:center; padding:14px; background:#0a0f22; border-radius:10px}
-    .links{display:flex; gap:10px; flex-wrap:wrap}
-    .link{
-      display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px;
-      background:#0d1530; border:1px solid rgba(255,255,255,.08); text-decoration:none; color:var(--ink); font-weight:600;
-    }
-    .link:hover{border-color:var(--accent); box-shadow:0 0 0 4px rgba(27,209,156,.16)}
-    .note{margin-top:14px; color:var(--muted); font-size:13px}
-    .ok{color:var(--accent); font-weight:700}
-    .footer{padding:18px 28px; color:var(--muted); font-size:12px; border-top:1px solid rgba(255,255,255,.06)}
-    code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
   </style>
 </head>
 <body>
@@ -79,7 +61,7 @@
       </svg>
       <div>
         <h1 id="title">Bitcoin Address</h1>
-        <p class="sub">Send BTC to the address below. Double-check the first & last 6 characters before sending.</p>
+        <p class="sub">Send BTC to the address below. Double-check the first &amp; last 6 characters before sending.</p>
       </div>
     </header>
 
@@ -88,49 +70,10 @@
         <div id="addr" class="address" aria-live="polite">{{ btc_address }}</div>
         <button id="copyBtn" class="btn" type="button" aria-label="Copy address">Copy</button>
       </div>
-
-      <div class="grid">
-        <section class="panel">
-          <h3>QR code</h3>
-          <div class="qr" id="qrcode" aria-label="QR code for Bitcoin address"></div>
-        </section>
-
-        <section class="panel">
-          <h3>Quick actions</h3>
-          <div class="links">
-            <a class="link" href="{{ bitcoin_uri }}" aria-label="Open in wallet">
-              <!-- wallet icon -->
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v3h-5a2 2 0 0 0 0 4h5v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" stroke="currentColor" stroke-width="1.4"/><path d="M20 12h-5" stroke="currentColor" stroke-width="1.4"/></svg>
-              Open in wallet
-            </a>
-            <a class="link" target="_blank" rel="noopener" href="https://mempool.space/address/{{ btc_address }}">
-              <!-- external icon -->
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3M21 14v7h-7" stroke="currentColor" stroke-width="1.4"/><path d="M3 10v11h11" stroke="currentColor" stroke-width="1.4"/></svg>
-              View on explorer
-            </a>
-          </div>
-          <p class="note">Address checksum: <span class="ok">{{ btc_address[:6] }}</span>…<span class="ok">{{ btc_address[-6:] }}</span></p>
-        </section>
-      </div>
-
-      <p class="note">Security tip: Always test with a small amount first if it’s a new address.</p>
     </div>
-
-    <footer class="footer">
-      &copy; {{ 2025 }} — Bitcoin payments page
-    </footer>
   </article>
 
-  <!-- Lightweight client-side QR (no build tools needed) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
-          integrity="sha512-HK5fgLBL+xZ8A2eP7V4s8g1l2gHhRzqk8nJkQ1nI1XnIYv7LwYwGm6m3fRz2r1tHn6EwF2a6mQ8eN4HfZ57V/Q=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
-    const text = "{{ bitcoin_uri }}";
-    new QRCode(document.getElementById("qrcode"), {
-      text, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M
-    });
-
     const copyBtn = document.getElementById("copyBtn");
     const addrEl  = document.getElementById("addr");
     copyBtn.addEventListener("click", async () => {
